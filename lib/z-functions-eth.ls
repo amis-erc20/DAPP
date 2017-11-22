@@ -28,6 +28,7 @@ map init(lr), ["currentType", "creator", "changeMainAddress", "isEns", "mainAddr
 
 @get-all-lr-data =(address)->(cb)->
 	out = {}
+	lr.currency(address) ->  				out.currency = +lilNum-toStr &1    
 	lr.wanted_wei(address) ->  				out.WantedWei = &1    
 	lr.premium_wei(address) -> 				out.PremiumWei = &1
 	lr.getTokenName(address) ->                 out.TokenName = &1
@@ -43,7 +44,7 @@ map init(lr), ["currentType", "creator", "changeMainAddress", "isEns", "mainAddr
 	lr.getEnsDomainHash(address) ->				out.EnsDomainHash = &1
 
 	cycle =-> 
-		if typeof out.PremiumWei ==\undefined || typeof out.TokenName ==\undefined || typeof out.TokenInfoLink ==\undefined || typeof out.TokenSmartcontractAddress ==\undefined || typeof out.Borrower ==\undefined || typeof out.DaysToLen ==\undefined || typeof out.State ==\undefined || typeof out.Lender ==\undefined || typeof out.TokenAmount ==\undefined || typeof out.isEns == \undefined || typeof out.EnsDomainHash == \undefined
+		if typeof out.PremiumWei ==\undefined || typeof out.TokenName ==\undefined || typeof out.TokenInfoLink ==\undefined || typeof out.TokenSmartcontractAddress ==\undefined || typeof out.Borrower ==\undefined || typeof out.DaysToLen ==\undefined || typeof out.State ==\undefined || typeof out.Lender ==\undefined || typeof out.TokenAmount ==\undefined || typeof out.isEns == \undefined || typeof out.EnsDomainHash == \undefined || typeof out.currency == \undefined
 			Meteor.setTimeout (->cycle!), 10
 		else cb null, out
 
