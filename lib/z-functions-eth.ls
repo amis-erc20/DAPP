@@ -5,26 +5,13 @@
 @ledger = call:(method)~>(...args)~> web3?eth.contract(config.LEDGER-ABI).at(config.ETH_MAIN_ADDRESS)[method](...args)
 @init   = (obj)~> (method)~> obj[method] = obj[\call](method)
 
-map init(ledger), [ 
-	\Ledger 						#1. (address whereToSendFee_)
-	\createNewLendingRequest 		#2. payable byAnyone returns(address out)
-	\getFeeSum 						#3. constant returns(uint out)
-	\getLrCount 					#4. constant returns(uint out)
-	\getLr 							#5. constant returns (address out)
-	\getLrCountForUser 				#6. (address a)constant returns(uint out)
-	\getLrForUser 					#7. (address a,uint index) constant returns (address out)
-	\payable                        #8. when recieve money -> NewLendingRequest()
-	\getLrFundedCount				#9. same
-	\getLrFunded 				    #10.same
-	\getRepTokenAddress             #11.
-	\createNewLendingRequestEns     #12.
-]
+map init(ledger), ["mainAddress", "registrarAddress", "repTokenAddress", "getLr", "getLrFunded", "lastTimeRateUpdated", "__callback", "isNeedToUpdateEthToUsdRate", "__callback", "oraclizeFee", "getLrForUser", "ethPriceInUsd", "ensRegistryAddress", "unlockRepTokens", "totalLrCount", "lockRepTokens", "addRepTokens", "newLr", "getLrCount", "newLrAndSetData", "whereToSendFee", "getLrCountForUser", "getNow", "getEthToUsdRate", "borrowerFeeAmount", "updateEthToUsdRate", "getLrFundedCount", "getRepTokenAddress", "approveRepTokens", "ethPriceInUsdInt", "burnRepTokens", "getFeeSum", "newOraclizeQuery", "priceReceived"]
+map init(lr), ["currentType", "creator", "changeMainAddress", "isEns", "mainAddress", "registrarAddress", "lenderFeeAmount", "changeLedgerAddress", "token_smartcontract_address", "getBorrower", "getTokenSmartcontractAddress", "token_infolink", "setData", "getCurrentState", "waitingForPayback", "premium_wei", "getNeededSumByBorrower", "token_amount", "waitingForLender", "getDaysToLen", "getTokenAmount", "ensRegistryAddress", "isRep", "wanted_wei", "borrower", "getTokenInfoLink", "getTokenName", "token_name", "getLender", "ens_domain_hash", "cancell", "whereToSendFee", "getNeededSumByLender", "lender", "start", "days_to_lend", "getEnsDomainHash", "requestDefault", "currency", "returnTokens", "convertToEth"]
 
 # @lr-keys=-> 
 # 	if web3?eth.contract(config.LRABI).abi
 # 		compact map((.name), web3?eth.contract(config.LRABI).abi)
 
-map init(lr), ["currentType", "creator", "changeMainAddress", "isEns", "mainAddress", "registrarAddress", "lenderFeeAmount", "changeLedgerAddress", "token_smartcontract_address", "getBorrower", "getTokenSmartcontractAddress", "token_infolink", "setData", "getCurrentState", "waitingForPayback", "premium_wei", "getNeededSumByBorrower", "token_amount", "waitingForLender", "getDaysToLen", "getTokenAmount", "ensRegistryAddress", "isRep", "wanted_wei", "borrower", "getTokenInfoLink", "getTokenName", "token_name", "getLender", "ens_domain_hash", "cancell", "whereToSendFee", "getNeededSumByLender", "lender", "start", "days_to_lend", "getEnsDomainHash", "requestDefault", "currency", "returnTokens", "convertToEth"]
 
 @get-all-lr-data =(address)->(cb)->
 	out = {}
