@@ -1,56 +1,60 @@
 Router.route \mainTemplate, path: \/main/:page
 
-template \mainTemplate -> main_blaze do
+template \mainTemplate -> main_blaze {},
     not-found-component('Not found', 'No Loan Requests found')
     D \card-wrapper,
         progress-bar!
         D "card-und-nav #{state.get \quartet-class }",
             D "card-wrapper-aligned",
-                D \div, map card-template, state.get(\quartet)||[]
+                D \div, map card-template, quartet!#state.get(\)
 
             link-panel \main
 
+
+@quartet=-> state.get \quartet
 
 @card-class=->
     if it?isEns => return \ens
     if it?isRep => return \rep
     if !it.isEns && !it.isRep => return \tokens
 
-@card-template =-> a class:"card #{card-class it }" href:"/loan-request/#{it?id}",
-    div class:"card-header #{card-class it}",
-        if it.State > 0 => div class:\div,
-            h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
-            if !it.isEns && !it.isRep
-                if bigNum-toStr(it.WantedWei).length < 10    
-                    if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
-                        h3 class:'card-header-inscription token-am', "#{it?TokenName} (#{it?TokenAmount})"
-                    else h3 class:'card-header-inscription token-am', "#{it?TokenName}"
-            if it.isEns
-                h3 class:'card-header-inscription token-am', 'ENS domain'
+@card-template =-> 
+    console.log \card-template-for: it
+    a class:"card #{card-class it }" href:"/loan-request/#{it?id}",
+        div class:"card-header #{card-class it}",
+            if it.State > 0 => div class:\div,
+                h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } Eth"
+                if !it.isEns && !it.isRep
+                    if bigNum-toStr(it.WantedWei).length < 10    
+                        if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
+                            h3 class:'card-header-inscription token-am', "#{it?TokenName} (#{it?TokenAmount})"
+                        else h3 class:'card-header-inscription token-am', "#{it?TokenName}"
+                if it.isEns
+                    h3 class:'card-header-inscription token-am', 'ENS domain'
 
-        else if it.Borrower?toUpperCase() == web3?eth?defaultAccount?toUpperCase()
-            h3 class:\card-header-amount, "Please, set the data"
+            else if it.Borrower?toUpperCase() == web3?eth?defaultAccount?toUpperCase()
+                h3 class:\card-header-amount, "Please, set the data"
 
-        else h3 class:\card-header-amount, "Data must be set by the Borrower"
+            else h3 class:\card-header-amount, "Data must be set by the Borrower"
 
-    div class:\card-body,
-        if web3.eth.defaultAccount?toUpperCase() == it.Borrower?toUpperCase()
-            img class:\img-dot src:\/img/red_dot.svg alt:''
-        h4 class:\card-key, "Borrower"
-        p class:"card-value #{card-class it}", it.Borrower
-        if it?State != 3  => D \div-lender,
-            if web3.eth.defaultAccount?toUpperCase() == it.Lender?toUpperCase()
+        div class:\card-body,
+            if web3.eth.defaultAccount?toUpperCase() == it.Borrower?toUpperCase()
                 img class:\img-dot src:\/img/red_dot.svg alt:''
-            h4 class:'card-key font-weight-normal', "Lender" 
-            p class:"card-value #{card-class it}", if it.Lender != big-zero => it.Lender else \–––
-        if it?State == 3 && it.Borrower?toUpperCase() != web3.eth.defaultAccount?toUpperCase()
-            h4 class:"card-key-inscription" style:'color:black', "Get #{get-premium(it.PremiumWei)}Premium!"
-        # if it?State == 3
-        #     button class:'card-button bgc-primary fund-button' style:"width:100px;margin-left:70px" id:it?id, 'Fund'
+            h4 class:\card-key, "Borrower"
+            p class:"card-value #{card-class it}", it.Borrower
+            if it?State != 3  => D \div-lender,
+                if web3.eth.defaultAccount?toUpperCase() == it.Lender?toUpperCase()
+                    img class:\img-dot src:\/img/red_dot.svg alt:''
+                h4 class:'card-key font-weight-normal', "Lender" 
+                p class:"card-value #{card-class it}", if it.Lender != big-zero => it.Lender else \–––
+            if it?State == 3 && it.Borrower?toUpperCase() != web3.eth.defaultAccount?toUpperCase()
+                h4 class:"card-key-inscription" style:'color:black', "Get #{get-premium(it.PremiumWei)}Premium!"
+            # if it?State == 3
+            #     button class:'card-button bgc-primary fund-button' style:"width:100px;margin-left:70px" id:it?id, 'Fund'
 
-        div class:'card-state float-left',
-            h4 class:'card-key font-weight-normal', "State"
-            p class:"card-value #{card-class it}", state-int-to-str it?State, if it?isEns => \domain else \tokens
+            div class:'card-state float-left',
+                h4 class:'card-key font-weight-normal', "State"
+                p class:"card-value #{card-class it}", state-int-to-str it?State, if it?isEns => \domain else \tokens
 
 
 
@@ -71,23 +75,29 @@ template \mainTemplate -> main_blaze do
         # div class:"progress-bar progress-bar-striped active" role:"progressbar" aria-valuenow:"#percent" aria-valuemin:"0" aria-valuemax:"100" style:"width:#{state.get \percent }%"
         # span class:"sr-only", "#{state.get \percent } Complete"
 
-create-quartet=(start,cb)->
+@create-quartet=(start,cb)->
     out = []
-    load-one-card =-> ledger.getLr start - it, (err,id)->
-        if id == big-zero => out[it] = null
-        else get-all-lr-data(id) (err,lr)~>
-            lr.id = id
-            out[it] = lr
+    load-one-card =(num)-> ledger.getLr start - num, (err,id)->
+        if (id == big-zero)||(id?length != 42) => out[num] = null
+
+        else get-all-lr-data(id) (err,lrloc)~>
+            lrloc.id = id
+            out[num] = lrloc
+            console.log \lrloc: out[num]
 
     map load-one-card, [0 1 2 3]
     Undef = false
    
     cycle =-> 
+        # console.log \out: out 
         if typeof out[0] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
         if typeof out[1] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
         if typeof out[2] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
         if typeof out[3] == \undefined => return Meteor.setTimeout (-> cycle! ), 10            
-        else return cb null, compact out
+        else 
+            console.log \DONE!
+            state.set \quartet compact out
+            return cb null, compact out
     cycle!        
 
 create-quartet-page=(start)->

@@ -18,46 +18,50 @@ template \newLoanRequest -> main_blaze do
             br!
             br!
             "0.1 CRE allows to borrow up to 0.1 ETH without a collateral (reputation based lending)."
-        div class:'new-loan-group',
-            div class:'new-loan-text', 'New loan request:'
-        button class:'new-loan-request card-button bgc-primary blue',  \Tokens
-        button class:'new-domain-request card-button bgc-primary blue', \Domain
-        button class:'new-rep-request card-button bgc-primary red', \Reputation
+
+        d \.center,
+            div class:'row', 
+                d \.header 'Collateral Type'    
+                div class:'form-check',
+                    label class:'form-check-label',
+                        input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios1' value:\0 checked:''
+                        "Tokens"
+                div class:'form-check',
+                    label class:'form-check-label',
+                        input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios2' value:\1
+                        "Domain"
+                div class:'form-check',
+                    label class:'form-check-label',
+                        input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios3' value:\2
+                        "Reputation"
+
+            div class:'row', 
+                d \.header 'Currency'    
+                div class:'form-check',
+                    label class:'form-check-label',
+                        input class:'form-check-input' type:'radio' name:'contract-currency' id:'gridRadios4' value:\0 checked:''
+                        "ETH"
+                div class:'form-check',
+                    label class:'form-check-label',
+                        input class:'form-check-input' type:'radio' name:'contract-currency' id:'gridRadios5' value:\1
+                        "USD"
+
+        button class:'new-loan-request card-button bgc-primary blue',  \Create
 
 
 Template.newLoanRequest.events do
     'click .new-loan-request':->
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequest do
-            {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
-            (err,res)->
-                if err => console.log \err: err
-                if res 
-                    console.log \thash: res
-                    state.set \transact-to-address config.ETH_MAIN_ADDRESS
-                    state.set \transact-value      state.get(\fee-sum)
-                    Router.go \success   
+        params = {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
+        type = +$('input[name="contract-type"]:checked').val!
+        currency = +$('input[name="contract-currency"]:checked').val!
 
-    'click .new-domain-request':->
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequestEns do
-            {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
-            (err,res)->
-                if err => console.log \err: err
-                if res 
-                    console.log \thash: res
-                    state.set \transact-to-address config.ETH_MAIN_ADDRESS
-                    state.set \transact-value      state.get(\fee-sum)
-                    Router.go \success   
-
-    'click .new-rep-request':->
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequestRep do
-            {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
-            (err,res)->
-                if err => console.log \err: err
-                if res 
-                    console.log \thash: res
-                    state.set \transact-to-address config.ETH_MAIN_ADDRESS
-                    state.set \transact-value      state.get(\fee-sum)
-                    Router.go \success   
+        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).newLr type, currency, params, (err,res)->
+            if err => console.log \err: err
+            if res 
+                console.log \thash: res
+                state.set \transact-to-address config.ETH_MAIN_ADDRESS
+                state.set \transact-value      state.get(\fee-sum)
+                Router.go \success   
 
 
 Template.newLoanRequest.created =->
@@ -66,7 +70,7 @@ Template.newLoanRequest.created =->
     state.set \loading-class ''
         
 Template.newLoanRequest.rendered =~>
-    ledger.getFeeSum (err, res)~>
+    web3?eth.contract(config.LEDGER-ABI).at(config.ETH_MAIN_ADDRESS).getFeeSum (err, res)~>
         if err => return err 
         fee-sum = lilNum-toStr res
         state.set \fee-sum fee-sum

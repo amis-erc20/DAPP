@@ -12,10 +12,12 @@ template \funded -> main_blaze do
 
             link-panel \funded
 
+
+
 create-quartet=(start,cb)->
     out = []
     load-one-card =-> ledger.getLrFunded start - it, (err,id)->
-        if id == big-zero => out[it] = null
+        if (id == big-zero)||(id?length != 42) => out[it] = null
         else get-all-lr-data(id) (err,lr)~>
             lr.id = id
             out[it] = lr

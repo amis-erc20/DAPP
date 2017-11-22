@@ -10,3 +10,10 @@ each blaze__init, <[ em b input link h5 h6 strong img meta source br hr div span
 @D =( cls, ...args)-> div class:cls, args
 
 @P =( cls, ...args)-> p class:cls, args	
+
+@d =(cls, ...args)-> 
+	if cls.indexOf(\.)>-1 && cls.match(/[\S]+/g) 
+		cls .= replace /\./g ' '
+		HTML[\DIV] class:cls, args
+	else
+		HTML[\DIV] cls, args
