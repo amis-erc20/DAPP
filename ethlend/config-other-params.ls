@@ -8,4 +8,4 @@ config.ETH_MAIN_ADDRESS_LINK     = \https://etherscan.io/address/ + config.ETH_M
 config.BALANCE_FEE_AMOUNT_IN_WEI = 10000000000000000
 config.ETH_NODE                  = \http://ethnode.chain.cloud:8545
 config.SMART_CONTRACTS_ENABLED   = true
-config.STANDART_PARAMS           = from:config.TONY_ADDRESS, gas:4005000, gasPrice:150000000000
+config.STANDART_PARAMS           = from:\0x04b12cE6512Cce5827e964B00E34E6AD2B9AC852, gas:4005000, gasPrice:150000000000
