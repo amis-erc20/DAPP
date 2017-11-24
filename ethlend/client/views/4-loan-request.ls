@@ -146,7 +146,7 @@ Template.loan_request.created=->
 
 
                         ledger.isNeedToUpdateEthToUsdRate (err,need)->
-                            state.set \isNeedToUpdateEthToUsdRate true
+                            state.set \isNeedToUpdateEthToUsdRate need
 
 
 Template.loan_request.rendered =->
