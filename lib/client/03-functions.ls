@@ -164,14 +164,13 @@
     a1.add a2 .to-fixed!
 
 
-
 @bigNum-toStr =(arr)-> 
     bn = new BigNumber(0)
     bn.c = arr?c
     bn.e = arr?e
     bn.s = arr?s
     many = 1000_000_000_000_000_000
-    bn.divided-by(many).to-fixed!
+    bn.divided-by(many).to-string!
     # console.log \bn: bn
 
 @bigNum-toStr-div10 =(arr)->
@@ -184,11 +183,12 @@
 
 
 @lilNum-toStr =(arr)-> 
+
     bn = new BigNumber(0)
     bn.c = arr?c
     bn.e = arr?e
     bn.s = arr?s
-    bn.to-fixed!
+    bn.to-string!
 
 @state-null =-> state.set it, null
 

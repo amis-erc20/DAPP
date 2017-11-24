@@ -40,10 +40,10 @@ text-and-button=-> div class:\text-aligned,
 
     if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Please, transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) }  to this Loan Request address - #{state.get \address } and click on the button"
-        button class:'card-button bgc-primary loan-button transfer-tokens', "Check that #{ ensQ('tokens are', 'domain is') } transferred"
+        # button class:'card-button bgc-primary loan-button transfer-tokens', "Check that #{ ensQ('tokens are', 'domain is') } transferred"
     if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Borrower should transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) } to this Loan Request address - #{state.get \address }"
-        button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, "Check that #{ensQ(\tokens \domain)} are transferred"
+        # button class:'card-button bgc-primary loan-button transfer-tokens' disabled:true, "Check that #{ensQ(\tokens \domain)} are transferred"
 
     if state.get(\lr-State)==3 && !state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text",      
@@ -58,12 +58,12 @@ text-and-button=-> div class:\text-aligned,
 
     if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", 
-            "To return #{ensQ(\tokens \domain 'the loan')} please send #{bigNum-toStr(state.get(\NeededSumByBorrower))} Eth to #{state.get \address }. This includes #{bigNum-toStr state.get(\lr).PremiumWei} Eth premium amount"
+            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }. This includes #{ premium-amount! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
             br!
-            "Borrower is rewarded with #{+bigNum-toStr-div10(state.get(\lr)?WantedWei)} Credit Tokens (CRE) after the repayment."
+            "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
         button class:'card-button bgc-primary loan-button return-tokens', "Return #{ensQ(\tokens \domain \loan)}"
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-        D "loan-prebutton-text", "Borrower should now return #{bigNum-toStr state.get(\NeededSumByBorrower)} Eth in order to get #{ensQ(\tokens \domain 'the loan')} back"
+        D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
         button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
     if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can #{ensQ('get his tokens' 'get his domain' 'burn his credit' )}"
@@ -94,6 +94,26 @@ block-scheme =-> D \block-scheme,
         div class:'block-scheme-line-arrow block-scheme-line-arrow-branch'
     div class:"#{highlightQ(5)} block-scheme-element block-scheme-element-branch #{if state.get(\lr-State)!=5 => \block-scheme-element-failure else \failure-highlighted }" style:"#{if state.get(\lr)?isRep=> \top:379px }", \Default
 
+
+premium-amount=->
+    if (state.get(\lr)?currency == 0)
+        return bigNum-toStr state.get(\lr).PremiumWei
+    else 
+        (+lilNumToStr(state.get(\lr)?PremiumWei)/100).to-fixed 2
+
+wanted-amount=->
+    if (state.get(\lr)?currency == 0)
+        bigNum-toStr state.get(\lr)?WantedWei
+    else 
+        (+lilNumToStr(state.get(\lr)?WantedWei)/100).to-fixed 2
+
+
+needed-sum-bor=->
+    if (state.get(\lr)?currency == 0)
+        bigNum-toStr state.get(\NeededSumByBorrower)
+
+    else 
+       (global.rate*(+bigNum-toStr state.get(\NeededSumByBorrower))).to-fixed 2
 
 Template.loan_request.created=->
     state.set \selected-class \loan
@@ -150,44 +170,49 @@ Template.loan_request.created=->
 
 
 Template.loan_request.rendered =->
-    wwei = bigNum-toStr state.get(\lr)?WantedWei
-    pwei = bigNum-toStr state.get(\lr)?PremiumWei
+    ledger.ethPriceInUsd (err,res)-> 
+        rate = (+res).to-fixed 2
 
-    if (state.get(\lr)?currency == 1)  
-        ledger.getEthToUsdRate (err,res)-> 
+        state.set \ethPriceInUsd +rate
+        global.rate  = +rate
 
-            rate = lilNumToStr res
-            $('.lr-usdrate').attr \value, rate
+        wwei = +lilNumToStr(state.get(\lr)?WantedWei)/100
+        pwei = +lilNumToStr(state.get(\lr)?PremiumWei)/100
 
-            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "#{wwei} (#{(wwei/rate).to-fixed(3)} ETH)"
-            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "#{pwei} (#{(pwei/rate).to-fixed(3)} ETH)"
-    else 
-        if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  wwei
-        if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, pwei
+        if (state.get(\lr)?currency == 1)         
+            $('.lr-usdrate').attr \value, global.rate
+            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "#{wwei} (#{(wwei/+rate).to-fixed(3)} ETH)"
+            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "#{pwei} (#{(pwei/+rate).to-fixed(3)} ETH)"
+        else 
+            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  wwei
+            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, pwei
 
+        if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
+        if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
 
-    if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
-    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
+        if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
+        if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
+        if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
+        
+        if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
 
-    if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
-    if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
-    if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
-    
-    if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
-
-
-    $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
-    $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
-
-
-
+        $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
+        $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
             
 Template.loan_request.events do 
     'click .set-data':-> 
         out = {}
-        out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
         out.days      = $(\.lr-DaysToLen).val!
-        out.premium   = eth-to-wei $(\.lr-PremiumWei).val!
+
+        if state.get(\lr)?currency == 0
+            out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
+            out.premium   = eth-to-wei $(\.lr-PremiumWei).val!
+
+        else 
+            out.ethamount =  (+$(\.lr-WantedWei).val! ) * 100
+            out.premium   =  (+$(\.lr-PremiumWei).val!) * 100
+
+
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
@@ -214,7 +239,8 @@ Template.loan_request.events do
 
 
     'click .lender-pay':-> 
-        console.log \NeededSumByLender: lilNum-toStr state.get(\NeededSumByLender)  
+        console.log \NeededSumByLender: bigNum-toStr state.get(\NeededSumByLender)  
+
         transact = {
             gasPrice: 200000000000
             from:  web3.eth.defaultAccount
@@ -242,7 +268,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: +lilNum-toStr state.get(\NeededSumByBorrower)
+            value: +lilNum-toStr state.get(\NeededSumByLender)
             #             gasPrice:150000000000
         }
         console.log \transact: transact
