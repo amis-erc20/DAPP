@@ -319,21 +319,21 @@ input-fields-column =->
 
     if (state.get(\lr)?currency == 0)
         if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
-            field-array.push c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
             field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
             field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
             field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
         if (state.get(\lr)?isEns)
-            field-array.push c:'lr-WantedWei'                                     n:'Eth amount'                 d:disableQ!, placeholder:'0.00 Eth'     
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
             field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
       
         if (state.get(\lr)?isRep)
-            field-array.push c:'lr-WantedWei block-input'   n:'Eth amount'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
+            field-array.push c:'lr-WantedWei block-input'   n:'Amount (ETH)'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
       
         field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
-        field-array.push c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Eth'       
+        field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
         field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
         field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
         field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
@@ -342,21 +342,21 @@ input-fields-column =->
     if (state.get(\lr)?currency == 1)
 
         if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
-            field-array.push c:'lr-WantedWei'                                     n:'Usd amount'                 d:disableQ!, placeholder:'0.00 Usd'     
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (USD)'                 d:disableQ!, placeholder:'0.00 Usd'     
             field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
             field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
             field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
         if (state.get(\lr)?isEns)
-            field-array.push c:'lr-WantedWei'                                     n:'Usd amount'                 d:disableQ!, placeholder:'0.00 Usd'     
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (SUD)'                 d:disableQ!, placeholder:'0.00 Usd'     
             field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
       
         if (state.get(\lr)?isRep)
-            field-array.push c:'lr-WantedWei block-input'   n:'Usd amount'       d:disableQ!, placeholder:'0.00 Usd' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
+            field-array.push c:'lr-WantedWei block-input'   n:'Amount (USD)'       d:disableQ!, placeholder:'0.00 Usd' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
       
         field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
-        field-array.push c:'lr-PremiumWei'                                    n:'Premium amount'             d:disableQ!, placeholder:'0.00 Usd'       
+        field-array.push c:'lr-PremiumWei'                                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Usd'       
         field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
         field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
         field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
