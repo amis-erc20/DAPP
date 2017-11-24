@@ -150,11 +150,25 @@ Template.loan_request.created=->
 
 
 Template.loan_request.rendered =->
-    # $(\.set-data).attr \disabled, \disabled
-    if bigNum-toStr(state.get(\lr)?WantedWei)   !=\0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
+    wwei = bigNum-toStr state.get(\lr)?WantedWei
+    pwei = bigNum-toStr state.get(\lr)?PremiumWei
+
+    if (state.get(\lr)?currency == 1)  
+        ledger.getEthToUsdRate (err,res)-> 
+
+            rate = lilNumToStr res
+            $('.lr-usdrate').attr \value, rate
+
+            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "#{wwei} (#{(wwei/rate).to-fixed(3)} ETH)"
+            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "#{pwei} (#{(pwei/rate).to-fixed(3)} ETH)"
+    else 
+        if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  wwei
+        if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, pwei
+
+
     if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
     if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
-    if bigNum-toStr(state.get(\lr)?PremiumWei)  !=\0 =>       $('.lr-PremiumWei').attr \value,                  bigNum-toStr state.get(\lr)?PremiumWei
+
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
     if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
@@ -165,8 +179,6 @@ Template.loan_request.rendered =->
     $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
     $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
 
-    if $('.lr-usdrate').0 => ledger.getEthToUsdRate (err,res)-> 
-        $('.lr-usdrate').attr \value, lilNumToStr res
 
 
             
