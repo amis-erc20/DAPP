@@ -33,7 +33,7 @@ update-rate=-> div class:'text-aligned update-rate-wrapper', D "loan-prebutton-t
 text-and-button=-> div class:\text-aligned,
     if state.get(\lr-State)==0 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Please, enter the data" 
-        button class:'card-button bgc-primary loan-button set-data', 'Set data'
+        button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
     if state.get(\lr-State)==0 && !state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Borrower should set the data" 
         button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
@@ -144,6 +144,11 @@ Template.loan_request.created=->
                         $('.bor-balance').attr \value, +bigNum-toStr(res)
                         state.set \bor-balance bigNum-toStr(res)
 
+
+                        ledger.isNeedToUpdateEthToUsdRate (err,need)->
+                            state.set \isNeedToUpdateEthToUsdRate true
+
+
 Template.loan_request.rendered =->
     # $(\.set-data).attr \disabled, \disabled
     if bigNum-toStr(state.get(\lr)?WantedWei)   !=\0 =>        $('.lr-WantedWei').attr \value,                  bigNum-toStr state.get(\lr)?WantedWei
@@ -163,8 +168,6 @@ Template.loan_request.rendered =->
     if $('.lr-usdrate').0 => ledger.getEthToUsdRate (err,res)-> 
         $('.lr-usdrate').attr \value, lilNumToStr res
 
-    ledger.getEthToUsdRate (err,rate)->
-        state.set \isNeedToUpdateEthToUsdRate lilNumToStr(rate)==0
 
             
 Template.loan_request.events do 
@@ -277,7 +280,7 @@ Template.loan_request.events do
 
 
     'click .update-rate':->
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:100000000000000000}, goto-success-cb
+        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
 
 
 Everything_is_ok=->
