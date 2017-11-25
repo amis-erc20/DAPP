@@ -46,6 +46,17 @@ template \newLoanRequest -> main_blaze do
                         input class:'form-check-input' type:'radio' name:'contract-currency' id:'gridRadios5' value:\1
                         "USD"
 
+            div class:'row', 
+                d \.header 'Installmens count'    
+                div class:'slider installment-slider',
+                    div id:\custom-handle-count class:\ui-slider-handle
+
+            div class:'row', 
+                d \.header 'Installment period'    
+                div class:'slider period-slider',
+                    div id:\custom-handle-period class:\ui-slider-handle
+
+
         button class:'new-loan-request card-button bgc-primary blue',  \Create
 
 
@@ -54,8 +65,10 @@ Template.newLoanRequest.events do
         params = {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
         type = +$('input[name="contract-type"]:checked').val!
         currency = +$('input[name="contract-currency"]:checked').val!
+        inst-count = +$(\.installment-slider).attr \value
+        inst-period = +$(\.period-slider).attr \value
 
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).newLr type, currency, params, (err,res)->
+        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).newLr type, currency, inst-count, inst-period, params, (err,res)->
             if err => console.log \err: err
             if res 
                 console.log \thash: res
@@ -70,9 +83,39 @@ Template.newLoanRequest.created =->
     state.set \loading-class ''
         
 Template.newLoanRequest.rendered =~>
+    $ \.installment-slider .slider do 
+        create:(event,ui)-> 
+            $(\#custom-handle-count).text $(this).slider \value
+            $(this).attr \value 1
+        
+        slide:(event,ui)-> 
+            $(\#custom-handle-count).text ui.value 
+            $(this).attr \value ui.value 
+        range: \min
+        min: 1
+        max: 12
+        step: 1
+        value: 1
+    $ \.period-slider .slider do 
+        create:(event,ui)-> 
+            $(\#custom-handle-period).text $(this).slider \value
+            $(this).attr \value 1
+        
+        slide:(event,ui)-> 
+            $(\#custom-handle-period).text ui.value 
+            $(this).attr \value ui.value 
+        range: \min
+        min: 1
+        max: 30
+        step: 1
+        value: 1
+
+
     web3?eth.contract(config.LEDGER-ABI).at(config.ETH_MAIN_ADDRESS).getFeeSum (err, res)~>
         if err => return err 
         fee-sum = lilNum-toStr res
         state.set \fee-sum fee-sum
         state.set \message-class ''
         state.set \loading-class \hidden
+
+

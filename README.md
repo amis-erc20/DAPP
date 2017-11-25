@@ -17,3 +17,12 @@ Copyright ETHLend.io
 "0x04b12cE6512Cce5827e964B00E34E6AD2B9AC852", "0x46366BAb61cc8958FaA5c42bDC4A56f959306F30", "0xA1564E2F4110815546A3aA681e6e26DE819848e2", "0x2338c380a0076De45ca84cf9Ab50fBB51B4Db98f", 391
 ```
 
+
+### TODO
+
+##### installment
+
+```livescript
+    .newLr type, currency, inst-count, inst-period
+```
+

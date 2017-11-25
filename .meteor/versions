@@ -52,6 +52,8 @@ meteorhacks:async@1.0.0
 meteorhacks:npm@1.5.0
 minimongo@1.3.3
 mizzao:bootboxjs@4.4.0
+mizzao:build-fetcher@0.2.0
+mizzao:jquery-ui@1.11.4
 modules@0.10.0
 modules-runtime@0.8.0
 mongo@1.2.2

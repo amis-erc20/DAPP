@@ -15,12 +15,12 @@ red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
 red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''     
 
 input-box =~> #div class:\input-box, 
-    if state.get(\isNeedToUpdateEthToUsdRate) ~= true => div class:\input-box, update-rate!
+    if state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
     else 
     # standart-output!
 
 # standart-output=->   
-        div class:\input-box,      
+        div class:\input-box,
             input-fields-column!
             text-and-button!
 
@@ -127,7 +127,7 @@ Template.loan_request.created=->
         *\lr-Lender
         *\lr-TokenSmartcontractAddress
         *\lr-TokenInfoLink
-        *\lr-isE
+        *\lr-isEns
     ]    
 
     state.set \address     (Router.current!originalUrl |> split \/ |> last )
@@ -184,8 +184,8 @@ Template.loan_request.rendered =->
             if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "#{wwei} (#{(wwei/+rate).to-fixed(3)} ETH)"
             if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "#{pwei} (#{(pwei/+rate).to-fixed(3)} ETH)"
         else 
-            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  wwei
-            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, pwei
+            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  +bigNum-toStr state.get(\lr)?WantedWei
+            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, +bigNum-toStr state.get(\lr)?PremiumWei
 
         if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
         if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
@@ -372,10 +372,6 @@ input-fields-column =->
       
         field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
         field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
-        field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
-
 
     if (state.get(\lr)?currency == 1)
 
@@ -393,19 +389,23 @@ input-fields-column =->
         if (state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei block-input'   n:'Amount (USD)'       d:disableQ!, placeholder:'0.00 Usd' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
       
-        field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
-        field-array.push c:'lr-PremiumWei'                                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Usd'       
-        field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
+        field-array.push c:'lr-DaysToLen'                     n:'Days to lend'               d:disableQ!                                      
+        field-array.push c:'lr-PremiumWei'                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Usd'       
+        field-array.push c:'lr-usdrate input-primary-short'   n:'Usd to Eth rate'            d:true
+    
+    field-array.push c:'lr-Borrower input-primary-short'  n:'Borrower'             d:true       red-dot:state.get(\IamBorrower)
+    field-array.push c:'bor-balance input-primary-short'  n:'Borrower reputation'  d:true       red-dot:state.get(\IamBorrower)
+    field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
-        field-array.push c:'lr-usdrate input-primary-short'                   n:'Usd to Eth rate'            d:true
+    field-array.push c:'lr-installments-count input-primary-short'     n:'Installments'              d:true v:state.get(\lr)?installment-count
+    field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period'        d:true v:state.get(\lr)?installment-period        
+    field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?next-installment-date
 
 
     map input-unit, field-array
 
 
-input-unit =-> section style:'height:33px',
+input-unit =-> section style:'height:27px',
     h3 class:\input-key, 
         if it.red-dot   => red-dot!
         it.n
