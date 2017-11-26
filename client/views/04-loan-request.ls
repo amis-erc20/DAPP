@@ -182,6 +182,7 @@ Template.loan_request.created=->
 
 Template.loan_request.rendered =->
     $ \.installment-slider .slider do 
+        disabled: !state.get(\IamBorrower)
         create:(event,ui)-> 
             $(\#custom-handle-count).text $(this).slider \value
             $(this).attr \value 1
@@ -194,7 +195,9 @@ Template.loan_request.rendered =->
         max: 12
         step: 1
         value: 1
+
     $ \.period-slider .slider do 
+        disabled: !state.get(\IamBorrower)
         create:(event,ui)-> 
             $(\#custom-handle-period).text $(this).slider \value
             $(this).attr \value 1
@@ -226,7 +229,7 @@ Template.loan_request.rendered =->
             if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, +bigNum-toStr state.get(\lr)?PremiumWei
 
 
-        if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
+        # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
         if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
 
         if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
@@ -235,13 +238,21 @@ Template.loan_request.rendered =->
         
         if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
 
+
+        if state.get(\lr)?installments_count        != \0 => $('.lr-installments-count').attr \value,      +bigNum-toStr state.get(\lr)?installments_count      
+        if state.get(\lr)?installments_period_days  != \0 => $('.lr-installments-period').attr \value,     +bigNum-toStr state.get(\lr)?installments_period_days
+        if state.get(\lr)?installment_index         != \0 => $('.lr-installments-next-date').attr \value,  +bigNum-toStr state.get(\lr)?installment_index       
+
+
         $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
         $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
-            
+
 Template.loan_request.events do 
     'click .set-data':-> 
         out = {}
-        out.days      = $(\.lr-DaysToLen).val!
+        out.installments_count  = +$(\.installment-slider).attr \value  
+        out.installments_period = +$(\.period-slider).attr \value 
+ 
 
         if state.get(\lr)?currency == 0
             out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
@@ -262,7 +273,6 @@ Template.loan_request.events do
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
 
-
         console.log \out: out
         lr.setData(state.get \address )(
             out.ethamount,
@@ -271,7 +281,8 @@ Template.loan_request.events do
             out.tokname,            
             out.link,
             out.smart,
-            out.days, 
+            out.installments_count,
+            out.installments_period,
             out.ensDomainHash,
             goto-success-cb
         )  
@@ -435,9 +446,9 @@ input-fields-column =->
     field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
     if state.get(\lr)?State != 0
-        field-array.push c:'lr-installments-count input-primary-short'     n:'Installments'              d:true v:state.get(\lr)?installment-count
-        field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period'        d:true v:state.get(\lr)?installment-period        
-        field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?next-installment-date
+        field-array.push c:'lr-installments-count input-primary-short'     n:'Installment'               d:true v:"#{state.get(\lr)?installment_index} of #{state.get(\lr)?installment_count}"
+        field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
+        # field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?installment-date
 
 
     map input-unit, field-array
