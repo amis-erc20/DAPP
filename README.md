@@ -20,9 +20,10 @@ Copyright ETHLend.io
 
 ### TODO
 
-##### installment
+##### Installment
 
 ```livescript
     .newLr type, currency, inst-count, inst-period
 ```
 
+Касательно логики работы next-installment-date. В контракте должна фиксироваться дата fund, и именно с нее нужно отсчитывать периоды и даты следующих платежей.
