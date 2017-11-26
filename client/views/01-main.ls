@@ -23,7 +23,7 @@ template \mainTemplate -> main_blaze {},
     a class:"card #{card-class it }" href:"/loan-request/#{it?id}",
         div class:"card-header #{card-class it}",
             if it.State > 0 => div class:\div,
-                h3 class:\card-header-amount, "#{bigNum-toStr it.WantedWei } #{if it?currency == 0 => \Eth else \Usd }"
+                h3 class:\card-header-amount, "#{if it?currency == 0 => bigNum-toStr(it.WantedWei) else  (+lilNum-toStr(it.WantedWei)/100).toFixed! } #{if it?currency == 0 => \Eth else \Usd }"
                 if !it.isEns && !it.isRep
                     if bigNum-toStr(it.WantedWei).length < 10    
                         if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
