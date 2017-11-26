@@ -268,7 +268,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: +lilNum-toStr state.get(\NeededSumByBorrower)
+            value: lilNum-toStr state.get(\NeededSumByBorrower)
             #             gasPrice:150000000000
         }
         console.log \transact: transact
