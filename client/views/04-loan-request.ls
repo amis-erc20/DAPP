@@ -69,13 +69,13 @@ text-and-button=-> div class:\text-aligned,
 
     if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", 
-            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }. This includes #{ premium-amount! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
+            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }. This includes #{ (premium-amount!/state.get(\lr).installments_count).to-fixed(3)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
             br!
             "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
-        button class:'card-button bgc-primary loan-button return-tokens', "Return #{ensQ(\tokens \domain \loan)}"
+        button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
-        button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
+        button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Pay an installment'
     if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can #{ensQ('get his tokens' 'get his domain' 'burn his credit' )}"
         button class:'card-button bgc-primary loan-button get-tokens', ensQ('Get tokens' 'Get domain' 'Burn borrowers CRE')
@@ -176,7 +176,8 @@ Template.loan_request.created=->
                         state.set \bor-balance bigNum-toStr(res)
 
 
-                        ledger.isNeedToUpdateEthToUsdRate (err,need)->
+                        ticker.isNeedToUpdateEthToUsdRate (err,need)->
+                            console.log \need: need
                             state.set \isNeedToUpdateEthToUsdRate need
 
 
@@ -211,8 +212,9 @@ Template.loan_request.rendered =->
         step: 1
         value: 1
 
-    ledger.ethPriceInUsd (err,res)-> 
+    ticker.ethPriceInUsd (err,res)-> 
         rate = (+res).to-fixed 2
+        console.log \rate: rate
 
         state.set \ethPriceInUsd +rate
         global.rate  = +rate
@@ -368,7 +370,7 @@ Template.loan_request.events do
 
 
     'click .update-rate':->
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
+        web3.eth.contract(config.TICKER-ABI).at(config.ETH_TICKER_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
 
 
 Everything_is_ok=->
@@ -446,7 +448,7 @@ input-fields-column =->
     field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
     if state.get(\lr)?State != 0
-        field-array.push c:'lr-installments-count input-primary-short'     n:'Installment'               d:true v:"#{state.get(\lr)?installment_index} of #{state.get(\lr)?installment_count}"
+        field-array.push c:'lr-installments-count input-primary-short'     n:'Installments payed'               d:true v:"#{state.get(\lr)?installment_index} of #{state.get(\lr)?installments_count}"
         field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
         # field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?installment-date
 

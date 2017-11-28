@@ -185,9 +185,9 @@
 @lilNum-toStr =(arr)-> 
 
     bn = new BigNumber(0)
-    bn.c = arr?c
-    bn.e = arr?e
-    bn.s = arr?s
+    bn.c = arr?c||[]
+    bn.e = arr?e||0
+    bn.s = arr?s||0
     bn.to-string!
 
 @state-null =-> state.set it, null
