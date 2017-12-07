@@ -105,6 +105,15 @@
         console.log \res: &1
         Router.go \success
 
+@autorefresh-cb =-> 
+    if &0 => console.log \err: &0
+    if &1
+        state.set \autorefresh_var &1
+        
+        Router.go \autorefresh_success
+
+
+
 
 
 @simple-cb =->
