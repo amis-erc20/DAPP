@@ -24,3 +24,4 @@ peerlibrary:assert
 mizzao:jquery-ui
 
 standard-minifier-js
+standard-minifier-css
