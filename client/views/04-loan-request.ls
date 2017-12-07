@@ -21,6 +21,9 @@ input-box =~> #div class:\input-box,
             input-fields-column!
 
             if state.get(\lr)?State == 0
+                tokens-select!
+
+            if state.get(\lr)?State == 0
                 section style:'height:27px',
                     h3 class:\input-key, 
                         'Installmens count'
@@ -238,7 +241,7 @@ Template.loan_request.rendered =->
 
         if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
         if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
-        if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
+        if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  smart-contract-converter state.get(\lr)?TokenSmartcontractAddress
         
         if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
 
@@ -270,14 +273,24 @@ Template.loan_request.events do
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
-        out.tokamount = $(\.lr-TokenAmount).val!   || 0
-        out.tokname   = $(\.lr-TokenName).val!    || ''
-        out.smart     = $(\.lr-TokenSmartcontractAddress).val! || 0
+        out.tokamount = +$(\.lr-TokenAmount).val!   || 0
+        out.tokname   = smart-contract-converter($('.tokens-list-select').val!) || ''
+        out.smart     = $('.tokens-list-select').val! || 0
         out.link      = $(\.lr-TokenInfoLink).val! || ''
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
 
-        console.log \out: out
+        
+        console.log \out.ethamount: out.ethamount
+        console.log \out.tokamount: out.tokamount
+        console.log \out.premium: out.premium
+        console.log \out.tokname: out.tokname
+        console.log \out.link: out.link
+        console.log \out.smart: out.smart
+        console.log \out.installments_count: out.installments_count
+        console.log \out.installments_period: out.installments_period
+        console.log \out.ensDomainHash: out.ensDomainHash
+
         lr.setData(state.get \address )(
             out.ethamount,
             out.tokamount,                    
@@ -356,7 +369,7 @@ Template.loan_request.events do
 
         
         if cls==\lr-TokenAmount && state.get(\lr)?isToken => test IntQ $T.val!
-        if cls==\lr-TokenName   && state.get(\lr)?isToken => test $T.val!length > 0
+        # if cls==\lr-TokenName   && state.get(\lr)?isToken => test $T.val!length > 0
         if cls==\lr-ensDomain   && state.get(\lr)?isEns   => test ShaQ $T.val!
         if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isToken => test EthQ $T.val!
        
@@ -412,10 +425,11 @@ input-fields-column =->
     if (state.get(\lr)?currency == 0)
         if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
-            field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            # field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            
+            # field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+            # field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
-            field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
-            field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
         if (state.get(\lr)?isEns)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
@@ -430,10 +444,13 @@ input-fields-column =->
 
         if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (USD)'                 d:disableQ!, placeholder:'0.00 Usd'     
-            field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            # field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            
+            # field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+            
+            # field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
+
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
-            field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
-            field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
         if (state.get(\lr)?isEns)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (SUD)'                 d:disableQ!, placeholder:'0.00 Usd'     
@@ -453,7 +470,7 @@ input-fields-column =->
         field-array.push c:'lr-installments-count input-primary-short'     n:'Installments payed'               d:true v:"#{state.get(\lr)?installments_paid} of #{state.get(\lr)?installments_count}"
         field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
         field-array.push c:'lr-installments-left input-primary-short'    n:'Days to pay left' d:true v:state.get(\lr)?days_left     
-       
+        field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!
         # field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?installment-date
 
 
@@ -467,6 +484,11 @@ input-unit =-> section style:'height:27px',
     input id:it.ident, type:it?type||\text, step:it?step, max:it?maxi, min:it?mini, ident:it.ident, style:'max-height:35px' class:"input #{it?c||''}" placeholder:it?placeholder, value:it?v, disabled:it.d 
     grn-pin!       
     red-pin!      
+
+tokens-select=-> section style:'height:27px',
+    h3 class:\input-key, 'Token name'
+    select class:\tokens-list-select,
+        map (-> option value:it?address, it?name), tokens-list!
 
         
         
