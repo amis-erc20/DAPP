@@ -20,12 +20,12 @@ template \info -> main_blaze {},
         p class:\info-value,
             a target:\_blank href:"https://etherscan.io/address/#{config.ENS_REG_ADDRESS}", config.ENS_REG_ADDRESS
 
-        h4 class:\info-key, "Your reputation"
-        p class:'info-value reputation', ''
+        # h4 class:\info-key, "Your reputation"
+        # p class:'info-value reputation', ''
 
-        h4 class:\info-key, "Credit Token (CRE)"
-        p class:\info-value,
-            a target:\_blank href:"https://etherscan.io/address/#{config.REP_ADDRESS}", config.REP_ADDRESS
+        # h4 class:\info-key, "Credit Token (CRE)"
+        # p class:\info-value,
+        #     a target:\_blank href:"https://etherscan.io/address/#{config.REP_ADDRESS}", config.REP_ADDRESS
   
         h4 class:\info-key, "First EthLend ver."
         p class:'info-value', a target:\_blank href:'http://oldest.ethlend.io', 'oldest.ethlend.io'
