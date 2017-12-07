@@ -94,11 +94,25 @@
     if &0 => console.log \err: &0
     if &1 => console.log \res: &1
 
+@lilcb =-> 
+    if &0 => console.log \err: &0
+    if &1 => console.log \res: lilNum-toStr &1
+
+
 @goto-success-cb =-> 
     if &0 => console.log \err: &0
     if &1
         console.log \res: &1
         Router.go \success
+
+@autorefresh-cb =-> 
+    if &0 => console.log \err: &0
+    if &1
+        state.set \autorefresh_var &1
+        
+        Router.go \autorefresh_success
+
+
 
 
 
@@ -185,9 +199,9 @@
 @lilNum-toStr =(arr)-> 
 
     bn = new BigNumber(0)
-    bn.c = arr?c
-    bn.e = arr?e
-    bn.s = arr?s
+    bn.c = arr?c||[]
+    bn.e = arr?e||0
+    bn.s = arr?s||0
     bn.to-string!
 
 @state-null =-> state.set it, null

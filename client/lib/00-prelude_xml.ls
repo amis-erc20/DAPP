@@ -17,3 +17,12 @@ each blaze__init, <[ em b input link h5 h6 strong img meta source br hr div span
 		HTML[\DIV] class:cls, args
 	else
 		HTML[\DIV] cls, args
+
+@T =(o,code)->
+	if typeof o is \object
+		Router.route o.name, path:o?path||(\/ + o.name)
+		template o.name, code
+	else 
+		Router.route o, path:\/ + o
+		template o, code
+

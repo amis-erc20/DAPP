@@ -15,13 +15,27 @@ red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
 red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''     
 
 input-box =~> #div class:\input-box, 
-    if state.get(\isNeedToUpdateEthToUsdRate) ~= true => div class:\input-box, update-rate!
+    if false => null# state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
     else 
-    # standart-output!
-
-# standart-output=->   
-        div class:\input-box,      
+        div class:\input-box,
             input-fields-column!
+
+            if state.get(\lr)?State == 0
+                tokens-select!
+
+            if state.get(\lr)?State == 0
+                section style:'height:27px',
+                    h3 class:\input-key, 
+                        'Installmens count'
+                    div class:'slider installment-slider',
+                        div id:\custom-handle-count class:\ui-slider-handle
+            if state.get(\lr)?State == 0
+                section style:'height:27px',
+                    h3 class:\input-key, 
+                        'Installment period (days)'
+                    div class:'slider period-slider',
+                        div id:\custom-handle-period class:\ui-slider-handle
+
             text-and-button!
 
 update-rate=-> div class:'text-aligned update-rate-wrapper', D "loan-prebutton-text", 
@@ -58,16 +72,18 @@ text-and-button=-> div class:\text-aligned,
 
     if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", 
-            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }. This includes #{ premium-amount! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
+            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ (+needed-sum-bor!).to-fixed(5) } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }." 
             br!
-            "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
-        button class:'card-button bgc-primary loan-button return-tokens', "Return #{ensQ(\tokens \domain \loan)}"
+            "This includes #{ (premium-amount!/state.get(\lr).installments_count).to-fixed(3)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
+            # br!
+            # "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
+        button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
-        button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Return tokens'
+        button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Pay an installment'
     if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can #{ensQ('get his tokens' 'get his domain' 'burn his credit' )}"
-        button class:'card-button bgc-primary loan-button get-tokens', ensQ('Get tokens' 'Get domain' 'Burn borrowers CRE')
+        button disabled:!state.get('lr').isCanDefault, class:'card-button bgc-primary loan-button get-tokens', ensQ('Get tokens' 'Get domain' 'Burn borrowers CRE')
 
 block-scheme =-> D \block-scheme,
     D "block-scheme-element #{highlightQ(0)}", 'No data'
@@ -84,7 +100,7 @@ block-scheme =-> D \block-scheme,
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
-        p class:\block-scheme-line-inscription, 'Borrower gets ',  ensQ('his tokens back +' 'his domain back +', ''), br!, 'Credit Tokens (CRE)'
+        p class:\block-scheme-line-inscription, 'Borrower gets ',  ensQ('his tokens back' 'his domain back', '') #, br!, 'Credit Tokens (CRE)'
         p class:'block-scheme-line-inscription block-scheme-line-inscription-second' , "Lender gets #{if state.get(\lr)?currency~=0 => \Eth else \Usd } amount"
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
@@ -127,7 +143,7 @@ Template.loan_request.created=->
         *\lr-Lender
         *\lr-TokenSmartcontractAddress
         *\lr-TokenInfoLink
-        *\lr-isE
+        *\lr-isEns
     ]    
 
     state.set \address     (Router.current!originalUrl |> split \/ |> last )
@@ -165,13 +181,45 @@ Template.loan_request.created=->
                         state.set \bor-balance bigNum-toStr(res)
 
 
-                        ledger.isNeedToUpdateEthToUsdRate (err,need)->
+                        ticker.isNeedToUpdateEthToUsdRate (err,need)->
+                            console.log \need: need
                             state.set \isNeedToUpdateEthToUsdRate need
 
 
 Template.loan_request.rendered =->
-    ledger.ethPriceInUsd (err,res)-> 
+    $ \.installment-slider .slider do 
+        disabled: !state.get(\IamBorrower)
+        create:(event,ui)-> 
+            $(\#custom-handle-count).text $(this).slider \value
+            $(this).attr \value 1
+        
+        slide:(event,ui)-> 
+            $(\#custom-handle-count).text ui.value 
+            $(this).attr \value ui.value 
+        range: \min
+        min: 1
+        max: 12
+        step: 1
+        value: 1
+
+    $ \.period-slider .slider do 
+        disabled: !state.get(\IamBorrower)
+        create:(event,ui)-> 
+            $(\#custom-handle-period).text $(this).slider \value
+            $(this).attr \value 1
+        
+        slide:(event,ui)-> 
+            $(\#custom-handle-period).text ui.value 
+            $(this).attr \value ui.value 
+        range: \min
+        min: 1
+        max: 30
+        step: 1
+        value: 1
+
+    ticker.ethPriceInUsd (err,res)-> 
         rate = (+res).to-fixed 2
+        console.log \rate: rate
 
         state.set \ethPriceInUsd +rate
         global.rate  = +rate
@@ -184,25 +232,34 @@ Template.loan_request.rendered =->
             if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "#{wwei} (#{(wwei/+rate).to-fixed(3)} ETH)"
             if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "#{pwei} (#{(pwei/+rate).to-fixed(3)} ETH)"
         else 
-            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  wwei
-            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, pwei
+            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  +bigNum-toStr state.get(\lr)?WantedWei
+            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, +bigNum-toStr state.get(\lr)?PremiumWei
 
-        if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
+
+        # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
         if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
 
         if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
         if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
-        if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  state.get(\lr)?TokenSmartcontractAddress
+        if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  smart-contract-converter state.get(\lr)?TokenSmartcontractAddress
         
         if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
 
+
+        if state.get(\lr)?installments_count        != \0 => $('.lr-installments-count').attr \value,      +bigNum-toStr state.get(\lr)?installments_count      
+        if state.get(\lr)?installments_period_days  != \0 => $('.lr-installments-period').attr \value,     +bigNum-toStr state.get(\lr)?installments_period_days
+        if state.get(\lr)?installment_index         != \0 => $('.lr-installments-next-date').attr \value,  +bigNum-toStr state.get(\lr)?installment_index       
+
+
         $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
         $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
-            
+
 Template.loan_request.events do 
     'click .set-data':-> 
         out = {}
-        out.days      = $(\.lr-DaysToLen).val!
+        out.installments_count  = +$(\.installment-slider).attr \value  
+        out.installments_period = +$(\.period-slider).attr \value 
+ 
 
         if state.get(\lr)?currency == 0
             out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
@@ -216,15 +273,24 @@ Template.loan_request.events do
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
-        out.tokamount = $(\.lr-TokenAmount).val!   || 0
-        out.tokname   = $(\.lr-TokenName).val!    || ''
-        out.smart     = $(\.lr-TokenSmartcontractAddress).val! || 0
+        out.tokamount = +$(\.lr-TokenAmount).val!   || 0
+        out.tokname   = smart-contract-converter($('.tokens-list-select').val!) || ''
+        out.smart     = $('.tokens-list-select').val! || 0
         out.link      = $(\.lr-TokenInfoLink).val! || ''
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
 
+        
+        console.log \out.ethamount: out.ethamount
+        console.log \out.tokamount: out.tokamount
+        console.log \out.premium: out.premium
+        console.log \out.tokname: out.tokname
+        console.log \out.link: out.link
+        console.log \out.smart: out.smart
+        console.log \out.installments_count: out.installments_count
+        console.log \out.installments_period: out.installments_period
+        console.log \out.ensDomainHash: out.ensDomainHash
 
-        console.log \out: out
         lr.setData(state.get \address )(
             out.ethamount,
             out.tokamount,                    
@@ -232,7 +298,8 @@ Template.loan_request.events do
             out.tokname,            
             out.link,
             out.smart,
-            out.days, 
+            out.installments_count,
+            out.installments_period,
             out.ensDomainHash,
             goto-success-cb
         )  
@@ -302,7 +369,7 @@ Template.loan_request.events do
 
         
         if cls==\lr-TokenAmount && state.get(\lr)?isToken => test IntQ $T.val!
-        if cls==\lr-TokenName   && state.get(\lr)?isToken => test $T.val!length > 0
+        # if cls==\lr-TokenName   && state.get(\lr)?isToken => test $T.val!length > 0
         if cls==\lr-ensDomain   && state.get(\lr)?isEns   => test ShaQ $T.val!
         if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isToken => test EthQ $T.val!
        
@@ -318,7 +385,7 @@ Template.loan_request.events do
 
 
     'click .update-rate':->
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
+        web3.eth.contract(config.TICKER-ABI).at(config.ETH_TICKER_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
 
 
 Everything_is_ok=->
@@ -358,10 +425,11 @@ input-fields-column =->
     if (state.get(\lr)?currency == 0)
         if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
-            field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            # field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            
+            # field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+            # field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
-            field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
-            field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
         if (state.get(\lr)?isEns)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
@@ -370,21 +438,19 @@ input-fields-column =->
         if (state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei block-input'   n:'Amount (ETH)'       d:disableQ!, placeholder:'0.00 Eth' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
       
-        field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
         field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
-        field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
-
 
     if (state.get(\lr)?currency == 1)
 
         if (not state.get(\lr)?isEns) && (not state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (USD)'                 d:disableQ!, placeholder:'0.00 Usd'     
-            field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            # field-array.push c:'lr-TokenName'   n:'Token name'       d:disableQ!                                
+            
+            # field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
+            
+            # field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
+
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
-            field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!                                      
-            field-array.push c:'lr-TokenInfoLink'                                 n:'Token info link (optional)' d:disableQ!
 
         if (state.get(\lr)?isEns)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (SUD)'                 d:disableQ!, placeholder:'0.00 Usd'     
@@ -393,25 +459,36 @@ input-fields-column =->
         if (state.get(\lr)?isRep)
             field-array.push c:'lr-WantedWei block-input'   n:'Amount (USD)'       d:disableQ!, placeholder:'0.00 Usd' type:\number step:0.01, maxi:(+rep), mini:0, v:(+bigNumToStr(state.get('lr').WantedWei)||rep)
       
-        field-array.push c:'lr-DaysToLen'                                     n:'Days to lend'               d:disableQ!                                      
-        field-array.push c:'lr-PremiumWei'                                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Usd'       
-        field-array.push c:'lr-Borrower input-primary-short'                  n:'Borrower'                   d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'bor-balance input-primary-short'                  n:'Borrower reputation'        d:true       red-dot:state.get(\IamBorrower)
-        field-array.push c:'lr-Lender input-primary-short'                    n:'Lender'                     d:true       red-dot:state.get(\IamLender)
+        field-array.push c:'lr-PremiumWei'                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Usd'       
+        field-array.push c:'lr-usdrate input-primary-short'   n:'Usd to Eth rate'            d:true
+    
+    field-array.push c:'lr-Borrower input-primary-short'  n:'Borrower'             d:true       red-dot:state.get(\IamBorrower)
+    # field-array.push c:'bor-balance input-primary-short'  n:'Borrower reputation'  d:true       red-dot:state.get(\IamBorrower)
+    field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
-        field-array.push c:'lr-usdrate input-primary-short'                   n:'Usd to Eth rate'            d:true
+    if state.get(\lr)?State != 0
+        field-array.push c:'lr-installments-count input-primary-short'     n:'Installments payed'               d:true v:"#{state.get(\lr)?installments_paid} of #{state.get(\lr)?installments_count}"
+        field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
+        field-array.push c:'lr-installments-left input-primary-short'    n:'Days to pay left' d:true v:state.get(\lr)?days_left     
+        field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!
+        # field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?installment-date
+
 
 
     map input-unit, field-array
 
-
-input-unit =-> section style:'height:33px',
+input-unit =-> section style:'height:27px',
     h3 class:\input-key, 
         if it.red-dot   => red-dot!
         it.n
-    input id:it.ident, type:it?type||\text, step:it?step, max:it?maxi, min:it?mini, ident:it.ident, style:'max-height:35px' class:"input #{it?c||''}" placeholder:it?placeholder, value:it?v, disabled:it.d
+    input id:it.ident, type:it?type||\text, step:it?step, max:it?maxi, min:it?mini, ident:it.ident, style:'max-height:35px' class:"input #{it?c||''}" placeholder:it?placeholder, value:it?v, disabled:it.d 
     grn-pin!       
     red-pin!      
+
+tokens-select=-> section style:'height:27px',
+    h3 class:\input-key, 'Token name'
+    select class:\tokens-list-select,
+        map (-> option value:it?address, it?name), tokens-list!
 
         
         
