@@ -72,8 +72,8 @@ text-and-button=-> div class:\text-aligned,
             "To return #{ensQ(\tokens \domain 'the loan')} please send #{ (+needed-sum-bor!).to-fixed(5) } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }." 
             br!
             "This includes #{ (premium-amount!/state.get(\lr).installments_count).to-fixed(3)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
-            br!
-            "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
+            # br!
+            # "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
         button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
@@ -97,7 +97,7 @@ block-scheme =-> D \block-scheme,
         D \block-scheme-line-arrow
     D "block-scheme-element #{highlightQ(4)}", \Funded
     D 'block-scheme-line block-scheme-line-long',
-        p class:\block-scheme-line-inscription, 'Borrower gets ',  ensQ('his tokens back +' 'his domain back +', ''), br!, 'Credit Tokens (CRE)'
+        p class:\block-scheme-line-inscription, 'Borrower gets ',  ensQ('his tokens back' 'his domain back', '') #, br!, 'Credit Tokens (CRE)'
         p class:'block-scheme-line-inscription block-scheme-line-inscription-second' , "Lender gets #{if state.get(\lr)?currency~=0 => \Eth else \Usd } amount"
         D 'block-scheme-line-arrow block-scheme-line-arrow-long'
     D "#{highlightQ(6)} block-scheme-element #{if state.get(\lr-State)!=6 => \block-scheme-element-success }", \Finished
@@ -446,7 +446,7 @@ input-fields-column =->
         field-array.push c:'lr-usdrate input-primary-short'   n:'Usd to Eth rate'            d:true
     
     field-array.push c:'lr-Borrower input-primary-short'  n:'Borrower'             d:true       red-dot:state.get(\IamBorrower)
-    field-array.push c:'bor-balance input-primary-short'  n:'Borrower reputation'  d:true       red-dot:state.get(\IamBorrower)
+    # field-array.push c:'bor-balance input-primary-short'  n:'Borrower reputation'  d:true       red-dot:state.get(\IamBorrower)
     field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
     if state.get(\lr)?State != 0
