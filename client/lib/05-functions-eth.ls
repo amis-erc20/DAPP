@@ -36,7 +36,10 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 	
 	lr.installments_count(address) ->            out.installments_count  = +lilNum-toStr &1
 	lr.installments_period_days(address) ->      out.installments_period_days = +lilNum-toStr &1
-	lr.installment_paid(address) ->              out.installment_paid = +lilNum-toStr &1
+	lr.installment_paid(address) ->              out.installments_paid = +lilNum-toStr &1
+	lr.getNextInstallmentDaysLeft(address) ->    out.days_left = +lilNum-toStr &1
+
+	lr.isCanDefault(address) ->                  out.isCanDefault =  &1
 
 	lr.getCurrentState(address) -> 			out.State = +lilNum-toStr &1
 	lr.getLender(address) -> 				out.Lender = &1
@@ -47,7 +50,7 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 
 	cycle =-> 
 		new-cycle = false
-		for key in <[ currency WantedWei PremiumWei TokenName TokenInfoLink TokenSmartcontractAddress Borrower installments_count installments_period_days installment_paid State Lender TokenAmount isEns isRep EnsDomainHash ]>
+		for key in <[ currency WantedWei PremiumWei TokenName TokenInfoLink TokenSmartcontractAddress Borrower installments_count installments_period_days installments_paid State Lender TokenAmount isEns isRep EnsDomainHash days_left isCanDefault ]>
 			if typeof out[key] == \undefined => new-cycle := true
 		
 			# console.log \out: out

@@ -94,6 +94,11 @@
     if &0 => console.log \err: &0
     if &1 => console.log \res: &1
 
+@lilcb =-> 
+    if &0 => console.log \err: &0
+    if &1 => console.log \res: lilNum-toStr &1
+
+
 @goto-success-cb =-> 
     if &0 => console.log \err: &0
     if &1
