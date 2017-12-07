@@ -22,3 +22,5 @@ minimongo@1.3.2
 peerlibrary:assert
 
 mizzao:jquery-ui
+
+standard-minifier-js
