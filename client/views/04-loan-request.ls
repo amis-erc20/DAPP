@@ -2,7 +2,7 @@ Router.route \loan_request, path:\/loan-request/:id template:\loan_request
 
 template \loan_request -> main_blaze do
     error-component!
-    loading-component!
+    # loading-component!
 
     D "loan-wrapper #{state.get \loan-wrapper-class }",
         D \input-wrapper,
@@ -72,9 +72,9 @@ text-and-button=-> div class:\text-aligned,
 
     if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", 
-            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ (+needed-sum-bor!).to-fixed(5) } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }." 
+            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ (+needed-sum-bor!) } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }." 
             br!
-            "This includes #{ (premium-amount!/state.get(\lr).installments_count).to-fixed(3)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
+            "This includes #{ (premium-amount!/state.get(\lr).installments_count)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
             # br!
             # "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
         button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
@@ -121,69 +121,45 @@ wanted-amount=->
     if (state.get(\lr)?currency == 0)
         bigNum-toStr state.get(\lr)?WantedWei
     else 
-        (+lilNumToStr(state.get(\lr)?WantedWei)/100).to-fixed 2
+        (+lilNumToStr(state.get(\lr)?WantedWei)/100)
 
 
 needed-sum-bor=->
     if (state.get(\lr)?currency == 0)
-        bigNum-toStr state.get(\NeededSumByBorrower)
+        +bigNum-toStr state.get(\lr)?neededSumByBorrower
 
     else 
-       (global.rate*(+bigNum-toStr state.get(\NeededSumByBorrower))).to-fixed 2
+       (global.rate*(+bigNum-toStr state.get(\lr)?neededSumByBorrower))
 
 Template.loan_request.created=->
     state.set \selected-class \loan
-    map state-null, [
-        *\lr-WantedWei
-        *\lr-DaysToLen
-        *\lr-TokenAmount
-        *\lr-PremiumWei
-        *\lr-TokenName
-        *\lr-Borrower
-        *\lr-Lender
-        *\lr-TokenSmartcontractAddress
-        *\lr-TokenInfoLink
-        *\lr-isEns
-    ]    
 
     state.set \address     (Router.current!originalUrl |> split \/ |> last )
     state.set \loan-wrapper-class, \hidden
     state.set \loading-class,      ''
     state.set \error-class, (if EthQ(state.get(\address))=>\hidden else '' )
 
-    lr.getNeededSumByLender(state.get \address ) (err,res)->   
-        state.set \NeededSumByLender res
-      
-        lr.getNeededSumByBorrower(state.get \address ) (err,res)-> 
-            state.set \NeededSumByBorrower res
+    state.set \NeededSumByLender +bigNum-toStr state.get(\lr)?neededSumByLender
+    state.set \NeededSumByBorrower +bigNum-toStr state.get(\lr)?neededSumByBorrower
+    state.set \fee-sum state.get(\lr)?feeSum
 
-            ledger.getFeeSum (err, res)->
-                if err => return err 
-                # fee-sum = lilNum-toStr res
-                state.set \fee-sum res
+    get-all-lr-data( state.get \address ) ->    
+        state.set \loan-wrapper-class, ''
+        state.set \loading-class, \hidden
+        &1.isToken = (!&1?isEns)&&(!&1?isRep)
+        state.set \lr, &1
+        state.set \lr-Lender   &1?Lender
+        state.set \lr-Borrower &1?Borrower
+        state.set \lr-State    &1?State
+        state.set \IamLender   (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Lender).toUpperCase())       
 
-                get-all-lr-data( state.get \address ) ->
-                      
-                    state.set \loan-wrapper-class, ''
-                    state.set \loading-class, \hidden
-                    &1.isToken = (!&1?isEns)&&(!&1?isRep)
-                    state.set \lr, &1
-                    state.set \lr-Lender   &1?Lender
-                    state.set \lr-Borrower &1?Borrower
-                    state.set \lr-State    &1?State
-                    state.set \IamLender   (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Lender).toUpperCase())       
+        state.set \IamBorrower (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Borrower).toUpperCase())   
 
+        state.set \bor-balance 0
 
-                    state.set \IamBorrower (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Borrower).toUpperCase())   
-
-                    get-rep-balance (state.get \lr)?Borrower, (err,res)->
-                        $('.bor-balance').attr \value, +bigNum-toStr(res)
-                        state.set \bor-balance bigNum-toStr(res)
-
-
-                        ticker.isNeedToUpdateEthToUsdRate (err,need)->
-                            console.log \need: need
-                            state.set \isNeedToUpdateEthToUsdRate need
+        ticker.isNeedToUpdateEthToUsdRate (err,need)->
+            console.log \need: need
+            state.set \isNeedToUpdateEthToUsdRate need
 
 
 Template.loan_request.rendered =->
@@ -306,13 +282,13 @@ Template.loan_request.events do
 
 
     'click .lender-pay':-> 
-        console.log \NeededSumByLender: bigNum-toStr state.get(\NeededSumByLender)  
+        console.log \NeededSumByLender: state.get(\NeededSumByLender)
 
         transact = {
             gasPrice: 200000000000
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: lilNum-toStr state.get(\NeededSumByLender)
+            value: lilNum-toStr state.get(\lr)?neededSumByLender
         }
         console.log \transact: transact
         web3.eth.sendTransaction transact, goto-success-cb
@@ -335,7 +311,7 @@ Template.loan_request.events do
         transact = {
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
-            value: lilNum-toStr state.get(\NeededSumByBorrower)
+            value: lilNum-toStr state.get(\lr)?neededSumByBorrower
             #             gasPrice:150000000000
         }
         console.log \transact: transact

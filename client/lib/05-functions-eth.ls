@@ -42,19 +42,30 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 	lr.isCanDefault(address) ->                  out.isCanDefault =  &1
 
 	lr.getCurrentState(address) -> 			out.State = +lilNum-toStr &1
+	lr.getCurrentState(address) -> 			out.state = +lilNum-toStr &1
 	lr.getLender(address) -> 				out.Lender = &1
 	lr.getTokenAmount(address) -> 			out.TokenAmount = +lilNum-toStr &1
 	lr.isEns(address) ->					out.isEns = &1
 	lr.isRep(address) ->					out.isRep = &1
 	lr.getEnsDomainHash(address) ->			out.EnsDomainHash = &1
 
+
+	lr.getNeededSumByBorrower(address) ->		out.neededSumByBorrower = &1
+	lr.getNeededSumByLender(address) ->	   	out.neededSumByLender = &1
+
+	ledger.getFeeSum ->						out.feeSum = &1
+
+
+
+
+
 	cycle =-> 
 		new-cycle = false
-		for key in <[ currency WantedWei PremiumWei TokenName TokenInfoLink TokenSmartcontractAddress Borrower installments_count installments_period_days installments_paid State Lender TokenAmount isEns isRep EnsDomainHash days_left isCanDefault ]>
+		for key in <[ currency WantedWei PremiumWei TokenName TokenInfoLink TokenSmartcontractAddress Borrower installments_count installments_period_days installments_paid State Lender TokenAmount isEns isRep EnsDomainHash days_left isCanDefault neededSumByBorrower neededSumByLender feeSum state ]>
 			if typeof out[key] == \undefined => new-cycle := true
 		
 			# console.log \out: out
-		if new-cycle => Meteor.setTimeout (->cycle!), 500
+		if new-cycle => Meteor.setTimeout (->cycle!), 50
 		
 		else 
 			console.log \out: out
@@ -62,8 +73,6 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 
 	cycle!
 
-@get-rep-balance =(address,cb)-> ledger.getRepTokenAddress (err,repAddress)->
-	contr = web3?eth.contract(config.REP-ABI).at(repAddress)
-	contr.balanceOf address, cb
+@get-rep-balance =(address,cb)-> cb null, 0
 
 
