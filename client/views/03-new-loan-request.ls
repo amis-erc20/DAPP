@@ -60,6 +60,8 @@ Template.newLoanRequest.events do
             if err => console.log \err: err
             if res 
                 console.log \thash: res
+                state.set \thash res
+                state.set \new_contract true
                 state.set \transact-to-address config.ETH_MAIN_ADDRESS
                 state.set \transact-value      state.get(\fee-sum)
                 Router.go \success   

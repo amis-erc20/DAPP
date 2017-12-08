@@ -41,25 +41,47 @@ T \success -> main_blaze do
 		h1 style:'font-size:50px; display:block', 'Done!'
 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
 			'Please wait. Action will be completed in the next few minutes' 
-			# br!
+			br!
+			"Transaction hash: #{state.get(\thash)}"
+			br!
+
+			if state.get \new_contract
+				cycle!
+			else
+				cycle!
+
 			# if state.get(\show-finished-text) => "#{+state.get(\transact-value)} Credit Tokens (CRE) were transferred to #{state.get \transact-to-address } address. "
 			# br!
 			# if state.get(\show-finished-text) => "Use CRE to borrow ETH without a collateral."
 
+
+
 		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
 
 
-T \autorefresh_success -> main_blaze do
-	div style:'padding:100px' class:\container ,
-		h1 style:'font-size:50px; display:block', 'Done!'
-		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
-			'Please wait. Action will be completed in the next few minutes' 
-			# br!
-			# if state.get(\show-finished-text) => "#{+state.get(\transact-value)} Credit Tokens (CRE) were transferred to #{state.get \transact-to-address } address. "
-			# br!
-			# if state.get(\show-finished-text) => "Use CRE to borrow ETH without a collateral."
+cycle=(action)->
+	web3.eth.getTransactionReceipt state.get(\thash), (err, obj)~>
+		console.log \getTransactionReceipt: obj
+		if obj => 
+			alert 'Transaction mined'
+			window.history.back!
 
-		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
+		else Meteor.setTimeout (-> cycle!), 200
+
+contract-details=(cb)-> web3.eth.getTransaction state.get(\thash), (err,res)-> cb(res)
+
+
+# T \autorefresh_success -> main_blaze do
+# 	div style:'padding:100px' class:\container ,
+# 		h1 style:'font-size:50px; display:block', 'Done!'
+# 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
+# 			'Please wait. Action will be completed in the next few minutes' 
+# 			# br!
+# 			# if state.get(\show-finished-text) => "#{+state.get(\transact-value)} Credit Tokens (CRE) were transferred to #{state.get \transact-to-address } address. "
+# 			# br!
+# 			# if state.get(\show-finished-text) => "Use CRE to borrow ETH without a collateral."
+
+# 		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
 
 
 
