@@ -84,7 +84,33 @@ Template.layout.rendered=->
     state.set \main-class     if (state.get(\addr-prelast)==\main)          => \selected else ''
     state.set \info-class     if (state.get(\addr-last)==\info)             => \selected else ''
     state.set \new-loan-class if (state.get(\addr-last)==\new-loan-request) => \selected else ''
-    
+
+
+checkAccountBalance = ->
+  web3.eth.getAccounts ((err, accounts) ->
+    if err isnt null
+      console.log 'An error occurred: ', err
+    else
+      if accounts.length is 0
+        swal {
+          title: 'Log in to Metamask'
+          text: 'You are not logged in to MetaMask. Log in to use the full functinality of the application.'
+          icon: 'info'
+        }
+      else
+        web3.eth.getBalance accounts.0, (error, result) ->
+          if error
+            return
+          else
+            if result.c.0 is 0
+              swal {
+                title: 'Account balance'
+                text: 'Your account balance is ' + result
+                icon: 'info'
+              }
+          return
+    return )
+  return
 
 # check-web=(eld, nom)~>
 
@@ -105,60 +131,28 @@ Template.layout.rendered=->
                      return
 
     if web3 and web3.eth => web3.version.getNetwork ((err, netId) ->
-                              if netId is '1'
-                                web3.eth.getAccounts ((err, accounts) ->
-                                  if err isnt null
-                                    console.log 'An error occurred: ', err
-                                  else
-                                  #Notify when not logged in to MetaMask
-                                    if accounts.length is 0
-                                      swal {
-                                        title: 'Log in to Metamask'
-                                        text: 'You are not logged in to MetaMask. Log in to use the full functinality of the application.'
-                                        icon: 'info'
-                                      }
-                                    else
-                                    #Notify if user MetaMask account balance 0
-                                      web3.eth.getBalance accounts.0, (error, result) ->
-                                        if error
-                                          return
-                                        else
-                                          console.log 'result answer: ', result.c[0]
-                                          if result.c[0] is 0
-                                            swal {
-                                              title: 'Account balance'
-                                              text: 'Your account balance is ' + result
-                                              icon: 'info'
-                                            }
-                                        return
-                                  return )
+                              #Change the network you would like to use in the settings.json:
+                              #main network = "main"
+                              #ropsten network = "ropsten"
+                              #rinkeby network = "rinkeby"
+                              #kovan network = "kovan"
+
+                              network = Meteor.settings.public.metamask.network
+                              if netId is '1' && network is 'main'
+                                checkAccountBalance!
                               else
-                              #Notify if user is on Testnet and ask to switch to mainnet
-                                if netId is '3'
-                                  swal {
-                                    title: 'Ropsten test network'
-                                    text: 'You are connected to the Ropsten test network. Please switch to Main network to make loans.'
-                                    icon: 'info'
-                                  }
+                                if netId is '3' && network is 'ropsten'
+                                  checkAccountBalance!
                                 else
-                                  if netId is '4'
-                                    swal {
-                                      title: 'Rinkeby test network'
-                                      text: 'You are connected to the Rinkeby test network. Please switch to Main network to make loans.'
-                                      icon: 'info'
-                                    }
+                                  if netId is '4' && network is 'rinkeby'
+                                    checkAccountBalance!
                                   else
-                                    if netId is '42'
-                                      console.log 'This is the Kovan test network.'
-                                      swal {
-                                        title: 'Kovan test network'
-                                        text: 'You are connected to the Kovan test network. Please switch to Main network to make loans.'
-                                        icon: 'info'
-                                      }
+                                    if netId is '42' && network is 'kovan'
+                                      checkAccountBalance!
                                     else
                                       swal {
-                                        title: 'Unknown network'
-                                        text: 'You are connected to an unknown network. Please switch to Main network to make loans.'
+                                        title: 'Wrong network'
+                                        text: 'You are connected to the wrong network. Please switch to ' + network + ' network to make loans.'
                                         icon: 'info'
                                       }
                               return )
