@@ -18,7 +18,6 @@ template \loading -> main_blaze do
 	div style:'padding:100px' class:\container ,
 		h1 style:'font-size:50px; display:block', 'Loading'
 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'Please, wait...'
-		# a class:'btn btn-primary btn-lg' href:'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn', 'Download Metamask'
 
 @not-found-component =-> 
 	div class:"#{state.get(\not-found-class)} container" style:'padding:100px',  
@@ -38,50 +37,43 @@ template \reload -> main_blaze do
 
 T \success -> main_blaze do
 	div style:'padding:100px' class:\container ,
-		h1 style:'font-size:50px; display:block', 'Done!'
+		h1 style:'font-size:50px; display:block', 'Loading...'
 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
-			'Please wait. Action will be completed in the next few minutes' 
+			'Please wait. Action will be completed in the next few minutes'
 			br!
 			"Transaction hash: #{state.get(\thash)}"
-			br!
-
-			if state.get \new_contract
-				cycle!
-			else
-				cycle!
-
-			# if state.get(\show-finished-text) => "#{+state.get(\transact-value)} Credit Tokens (CRE) were transferred to #{state.get \transact-to-address } address. "
-			# br!
-			# if state.get(\show-finished-text) => "Use CRE to borrow ETH without a collateral."
-
-
+			br!		
+			cycle!
 
 		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
 
 
-cycle=(action)->
+cycle=->
 	web3.eth.getTransactionReceipt state.get(\thash), (err, obj)~>
 		console.log \getTransactionReceipt: obj
-		if obj => 
-			alert 'Transaction mined'
-			window.history.back!
+		if !(state.get \new_contract)
+			if obj
+				alert 'Transaction mined'
+				window.history.back!
+			else Meteor.setTimeout (-> cycle!), 200
 
-		else Meteor.setTimeout (-> cycle!), 200
+		else 
+			if obj	
+				ledger.getLrCount (err, BN)->				
+					num = +lilNum-toStr(BN) 
+					console.log \num: num
+					if num
+						ledger.getLr (num - 1), (err, addr)->
+							console.log \num: num, \addr: addr
+							if (addr != big-zero) && (addr != \0x)
+								Router.go "/loan-request/#addr"
+							else Meteor.setTimeout (-> cycle!), 200
+
+					else Meteor.setTimeout (-> cycle!), 200
+			else Meteor.setTimeout (-> cycle!), 200
+
 
 contract-details=(cb)-> web3.eth.getTransaction state.get(\thash), (err,res)-> cb(res)
-
-
-# T \autorefresh_success -> main_blaze do
-# 	div style:'padding:100px' class:\container ,
-# 		h1 style:'font-size:50px; display:block', 'Done!'
-# 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
-# 			'Please wait. Action will be completed in the next few minutes' 
-# 			# br!
-# 			# if state.get(\show-finished-text) => "#{+state.get(\transact-value)} Credit Tokens (CRE) were transferred to #{state.get \transact-to-address } address. "
-# 			# br!
-# 			# if state.get(\show-finished-text) => "Use CRE to borrow ETH without a collateral."
-
-# 		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
 
 
 
