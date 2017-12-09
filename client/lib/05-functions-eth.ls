@@ -42,7 +42,6 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 	lr.isCanDefault(address) ->                  out.isCanDefault =  &1
 
 	lr.getCurrentState(address) -> 			out.State = +lilNum-toStr &1
-	lr.getCurrentState(address) -> 			out.state = +lilNum-toStr &1
 	lr.getLender(address) -> 				out.Lender = &1
 	lr.getTokenAmount(address) -> 			out.TokenAmount = +lilNum-toStr &1
 	lr.isEns(address) ->					out.isEns = &1
@@ -55,13 +54,14 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 
 	ledger.getFeeSum ->						out.feeSum = &1
 
-
+	ticker.ethPriceInUsd ->				     out.rate = (+&1).to-fixed 2
+	lr.wasEthWhenCreated(address) ->			out.was = +lilNum-toStr &1
 
 
 
 	cycle =-> 
 		new-cycle = false
-		for key in <[ currency WantedWei PremiumWei TokenName TokenInfoLink TokenSmartcontractAddress Borrower installments_count installments_period_days installments_paid State Lender TokenAmount isEns isRep EnsDomainHash days_left isCanDefault neededSumByBorrower neededSumByLender feeSum state ]>
+		for key in <[ currency WantedWei PremiumWei TokenName TokenInfoLink TokenSmartcontractAddress Borrower installments_count installments_period_days installments_paid State Lender TokenAmount isEns isRep EnsDomainHash days_left isCanDefault neededSumByBorrower neededSumByLender feeSum rate was ]>
 			if typeof out[key] == \undefined => new-cycle := true
 		
 			# console.log \out: out
