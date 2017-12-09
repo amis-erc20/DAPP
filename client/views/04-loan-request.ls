@@ -72,7 +72,7 @@ text-and-button=-> div class:\text-aligned,
 
     if state.get(\lr-State)==4 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", 
-            "To return #{ensQ(\tokens \domain 'the loan')} please send #{ (+needed-sum-bor!) } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address }." 
+            "Please send #{ (+needed-sum-bor!) } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } to #{state.get \address } to go to next installment." 
             br!
             "This includes #{ (premium-amount!/state.get(\lr).installments_count)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
             # br!
@@ -443,7 +443,7 @@ input-fields-column =->
     field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
     if state.get(\lr)?State != 0
-        field-array.push c:'lr-installments-count input-primary-short'     n:'Installments payed'               d:true v:"#{state.get(\lr)?installments_paid} of #{state.get(\lr)?installments_count}"
+        field-array.push c:'lr-installments-count input-primary-short'     n:'Installments paid'               d:true v:"#{state.get(\lr)?installments_paid} of #{state.get(\lr)?installments_count}"
         field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
         field-array.push c:'lr-installments-left input-primary-short'    n:'Days to pay left' d:true v:state.get(\lr)?days_left     
         field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!
