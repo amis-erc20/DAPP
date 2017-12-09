@@ -277,7 +277,10 @@ Template.loan_request.rendered =->
 
 
     $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
-    $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
+    $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink     
+
+    b-text = smart-contract-converter(state.get(\token-address)||state.get(\lr)?TokenSmartcontractAddress) 
+    if b-text => $(\.show-tokens).text b-text
 
 Template.loan_request.events do 
     'click .set-data':-> 
@@ -357,11 +360,19 @@ Template.loan_request.events do
             window.location.href = $(event.target).attr \href
         if state.get(\lr).State != 0 
             return event.prevent-default!
+
+        if web3.eth.defaultAccount != state.get(\lr)?Borrower
+            return event.prevent-default!
+
         $('#exampleModalLong').modal('hide')
         $(\.modal-backdrop).remove!
         addr = $(event.target).attr(\name) || $(event.target).parents(\.token-item-view).attr(\name)
         console.log \addr: addr
         state.set \token-address addr
+
+        b-text = smart-contract-converter addr
+        $(\.show-tokens).text b-text
+
 
     'click .show-tokens':->
         $('#exampleModalLong').modal!
@@ -524,7 +535,7 @@ input-unit =-> section style:'height:27px',
 
 tokens-select=-> section style:'height:27px',
     h3 class:\input-key, 'Token name'
-    button class:'show-tokens', smart-contract-converter(state.get(\token-address)||state.get(\lr)?TokenSmartcontractAddress)||'Select'
+    button class:'show-tokens', 'Select'
         
         
 @ensQ =-> 
