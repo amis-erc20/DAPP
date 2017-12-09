@@ -2,7 +2,9 @@ Router.route \loan_request, path:\/loan-request/:id template:\loan_request
 
 template \loan_request -> main_blaze do
     error-component!
-    # loading-component!
+    loading-component!
+
+    modal-dialog!
 
     D "loan-wrapper #{state.get \loan-wrapper-class }",
         D \input-wrapper,
@@ -10,18 +12,56 @@ template \loan_request -> main_blaze do
             input-box!
         block-scheme!
 
+
+modal-dialog=-> div class:'modal fade' id:'exampleModalLong' tabindex:'-1' role:'dialog' "aria-labelledby":'exampleModalLongTitle' "aria-hidden":'true',
+    div class:'modal-dialog' role:'document',
+        div class:'modal-content',
+            div class:'modal-header',
+                h5 class:'modal-title' id:'exampleModalLongTitle', "Choose token"
+                button type:'button' class:'close' "data-dismiss":'modal' "aria-label":'Close',
+                    span "aria-hidden":'true', \x
+            div class:'modal-body', div class:'list-group',
+
+                map token-item-view, tokens-list!
+
+
+token-item-view=-> a href:'#' class:"token-item-view list-group-item list-group-item-action flex-column align-items-start #{if state.get('lr')?TokenSmartcontractAddress == it?address => \active else ''}" name:it?address,
+    div class:'d-flex w-100 justify-content-between',
+        h5 class:'mb-1', it?name
+        small {}, it?description
+    # p class:'mb-1', 
+    small class:'token-addr', it?address
+
+                # a href:'#' class:'list-group-item list-group-item-action flex-column align-items-start',
+                #     div class:'d-flex w-100 justify-content-between',
+                #         h5 class:'mb-1', "List group item heading"
+                #         small class:'text-muted', "3 days ago"
+                #     p class:'mb-1', "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."
+                #     small class:'text-muted', "Donec id elit non mi porta."
+                # a href:'#' class:'list-group-item list-group-item-action flex-column align-items-start',
+                #     div class:'d-flex w-100 justify-content-between',
+                #         h5 class:'mb-1', "List group item heading"
+                #         small class:'text-muted', "3 days ago"
+                #     p class:'mb-1', "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."
+                #     small class:'text-muted', "Donec id elit non mi porta."
+                        # div class:'modal-footer',
+                        #     button type:'button' class:'btn btn-secondary' "data-dismiss":'modal', "Close"
+                        #     button type:'button' class:'btn btn-primary', "Save changes"
+
+
+
 grn-pin =-> img class:"hidden input-img-pin gpin" src:\/img/green_pin.svg alt:''
 red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
 red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''     
 
 input-box =~> #div class:\input-box, 
-    if false => null# state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
+    if state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
     else 
         div class:\input-box,
             input-fields-column!
 
-            if state.get(\lr)?State == 0
-                tokens-select!
+            # if state.get(\lr)?State == 0
+            tokens-select!
 
             if state.get(\lr)?State == 0
                 section style:'height:27px',
@@ -217,7 +257,9 @@ Template.loan_request.rendered =->
 
         if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
         if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
-        if state.get(\lr)?TokenSmartcontractAddress != big-zero => $('.lr-TokenSmartcontractAddress').attr \value,  smart-contract-converter state.get(\lr)?TokenSmartcontractAddress
+        if state.get(\lr)?TokenSmartcontractAddress != big-zero
+                $('.lr-TokenName').attr \value,  smart-contract-converter state.get(\lr)?TokenSmartcontractAddress
+                $('.lr-TokenAddress').attr \value, state.get(\lr)?TokenSmartcontractAddress
         
         if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
 
@@ -250,8 +292,8 @@ Template.loan_request.events do
         out.len       = $(\.lr-Lender).val!
 
         out.tokamount = +$(\.lr-TokenAmount).val!   || 0
-        out.tokname   = smart-contract-converter($('.tokens-list-select').val!) || ''
-        out.smart     = $('.tokens-list-select').val! || 0
+        out.tokname   = smart-contract-converter(state.get \token-address) || ''
+        out.smart     = state.get \token-address
         out.link      = $(\.lr-TokenInfoLink).val! || ''
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
@@ -303,9 +345,15 @@ Template.loan_request.events do
             # lr.checkDomain(state.get(\address)) goto-success-cb
             web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount,  gasPrice:20000000000}, goto-success-cb)
 
+    'click .token-item-view':(event, target)-> 
+        $('#exampleModalLong').modal('hide')
+        $(\.modal-backdrop).remove!
+        addr = $(event.target).attr(\name) || $(event.target).parents(\.token-item-view).attr(\name)
+        console.log \addr: addr
+        state.set \token-address addr
 
-
-
+    'click .show-tokens':->
+        $('#exampleModalLong').modal!
 
     'click .return-tokens':->
         transact = {
@@ -446,7 +494,9 @@ input-fields-column =->
         field-array.push c:'lr-installments-count input-primary-short'     n:'Installments paid'               d:true v:"#{state.get(\lr)?installments_paid} of #{state.get(\lr)?installments_count}"
         field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
         field-array.push c:'lr-installments-left input-primary-short'    n:'Days to pay left' d:true v:state.get(\lr)?days_left     
-        field-array.push c:'input-primary-short lr-TokenSmartcontractAddress' n:'Token smart contract'       d:disableQ!
+        # field-array.push c:'input-primary-short lr-TokenName' n:'Token name'                 d:disableQ!
+        # field-array.push c:'input-primary-short lr-TokenAddress' n:'Token smart contract'       d:disableQ!
+
         # field-array.push c:'lr-installments-next-date input-primary-short' n:'Next Installment date'     d:true v:state.get(\lr)?installment-date
 
 
@@ -463,9 +513,7 @@ input-unit =-> section style:'height:27px',
 
 tokens-select=-> section style:'height:27px',
     h3 class:\input-key, 'Token name'
-    select class:\tokens-list-select,
-        map (-> option value:it?address, it?name), tokens-list!
-
+    button class:'show-tokens', smart-contract-converter(state.get(\token-address)||state.get(\lr)?TokenSmartcontractAddress)||'Select'
         
         
 @ensQ =-> 

@@ -85,15 +85,18 @@ template \mainTemplate -> main_blaze {},
             out[num] = lrloc
             console.log \lrloc: out[num]
 
+
     map load-one-card, [0 1 2 3]
-    Undef = false
+    # Undef = false
    
     cycle =-> 
-        # console.log \out: out 
-        if typeof out[0] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
-        if typeof out[1] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
-        if typeof out[2] == \undefined => return Meteor.setTimeout (-> cycle! ), 10
-        if typeof out[3] == \undefined => return Meteor.setTimeout (-> cycle! ), 10            
+        new-cycle = false
+        if (typeof out[0] == \undefined)  => new-cycle := true
+        if (typeof out[1] == \undefined)  => new-cycle := true
+        if (typeof out[2] == \undefined)  => new-cycle := true
+        if (typeof out[3] == \undefined)  => new-cycle := true
+
+        if new-cycle => return Meteor.setTimeout (-> cycle! ), 10
         else 
             console.log \DONE!
             state.set \quartet compact out
