@@ -1,11 +1,11 @@
 @tokens-list=-> new Array do
-	* address:\0x8f8bf891529bb2ea3450695df75b0553e43bcd7b name:'Sample token'
-	* address:\0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0 name:'EOS'
+	* address:\0x8f8bf891529bb2ea3450695df75b0553e43bcd7b name:'Sample token' description:'ERC20 token for development'
+	* address:\0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0 name:'EOS' description:'Super-puper thing'
 	* address:\0x name:'Qtum'
 	* address:\0x name:'OmiseGO'
 	* address:\0x name:'MKR - Maker'
 	* address:\0x name:'REP - Augur'
-	* address:\0x name:'GOLEM (GNT)'
+	* address:\0x name:'GOLEM (GNT)' 
 	* address:\0x name:'TenXPay'
 	* address:\0x name:'SNT - Status Network'
 	* address:\0x name:'Kyber Network Crystal (KNC)'
@@ -54,7 +54,7 @@
 @smart-contract-converter=-> 
 	for item in tokens-list!
 		if it == item.address => return item.name
-	return it
+	return \–––
 
 
 
