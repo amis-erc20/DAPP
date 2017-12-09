@@ -23,7 +23,7 @@ template \mainTemplate -> main_blaze {},
     a class:"card #{card-class it }" href:"/loan-request/#{it?id}",
         div class:"card-header #{card-class it}",
             if it.State > 0 => div class:\div,
-                h3 class:\card-header-amount, "#{if it?currency == 0 => bigNum-toStr(it.WantedWei) else  (+lilNum-toStr(it.WantedWei)/100).toFixed! } #{if it?currency == 0 => \Eth else \Usd }"
+                h3 class:\card-header-amount, "#{if it?currency == 0 => bigNum-toStr(it.WantedWei) else  (+lilNum-toStr(it.WantedWei)/10^18).toFixed! } #{if it?currency == 0 => \Eth else \Usd }"
                 if !it.isEns && !it.isRep
                     if bigNum-toStr(it.WantedWei).length < 10    
                         if (bigNum-toStr(it?TokenAmount)?length + it?TokenName?length)< 20    
@@ -78,7 +78,9 @@ template \mainTemplate -> main_blaze {},
 @create-quartet=(start,cb)->
     out = []
     load-one-card =(num)-> ledger.getLr start - num, (err,id)->
+
         if (id == big-zero)||(id?length != 42) => out[num] = null
+
 
         else get-all-lr-data(id) (err,lrloc)~>
             lrloc.id = id
