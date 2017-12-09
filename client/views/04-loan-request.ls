@@ -28,7 +28,10 @@ modal-dialog=-> div class:'modal fade' id:'exampleModalLong' tabindex:'-1' role:
 token-item-view=-> a href:'#' class:"token-item-view list-group-item list-group-item-action flex-column align-items-start #{if state.get('lr')?TokenSmartcontractAddress == it?address => \active else ''}" name:it?address,
     div class:'d-flex w-100 justify-content-between',
         h5 class:'mb-1', it?name
-        small {}, it?description
+        small {}, 
+            it?description
+            br!
+            a class:'site-link' href:it?link, it?link
     # p class:'mb-1', 
     small class:'token-addr', it?address
 
@@ -233,44 +236,48 @@ Template.loan_request.rendered =->
         step: 1
         value: 1
 
-    ticker.ethPriceInUsd (err,res)-> 
-        rate = (+res).to-fixed 2
-        console.log \rate: rate
 
-        state.set \ethPriceInUsd +rate
-        global.rate  = +rate
+    global.rate = +state.get(\lr)?rate
+    global.was  = +state.get(\lr)?was
+    console.log \rate: rate
 
-        wwei = +lilNumToStr(state.get(\lr)?WantedWei)/100
-        pwei = +lilNumToStr(state.get(\lr)?PremiumWei)/100
+    state.set \ethPriceInUsd +rate
 
-        if (state.get(\lr)?currency == 1)         
-            $('.lr-usdrate').attr \value, global.rate
-            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "#{wwei} (#{(wwei/+rate).to-fixed(3)} ETH)"
-            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "#{pwei} (#{(pwei/+rate).to-fixed(3)} ETH)"
+    wwei = +lilNumToStr(state.get(\lr)?WantedWei)/100
+    pwei = +lilNumToStr(state.get(\lr)?PremiumWei)/100
+
+    if (state.get(\lr)?currency == 1)      
+        if global.was   
+            $('.lr-usdrate').attr \value, "$#{global.rate} (was $#{global.was} when LR was created)"
         else 
-            if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  +bigNum-toStr state.get(\lr)?WantedWei
-            if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, +bigNum-toStr state.get(\lr)?PremiumWei
+            $('.lr-usdrate').attr \value, "$#{global.rate}"
+
+        if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  "$#{+wwei/ 10^16 } (#{(wwei/(10^16 * (+global.rate))).to-fixed(7)} ETH)"
+        if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, "$#{+pwei/ 10^16 } (#{(pwei/(10^16 * (+global.rate))).to-fixed(7)} ETH)"
+    else 
+        if bigNum-toStr(state.get(\lr)?WantedWei)  !=\0 => $('.lr-WantedWei').attr \value,  +bigNum-toStr state.get(\lr)?WantedWei
+        if bigNum-toStr(state.get(\lr)?PremiumWei) !=\0 => $('.lr-PremiumWei').attr \value, +bigNum-toStr state.get(\lr)?PremiumWei
 
 
-        # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
-        if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
+    # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
+    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
 
-        if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
-        if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
-        if state.get(\lr)?TokenSmartcontractAddress != big-zero
-                $('.lr-TokenName').attr \value,  smart-contract-converter state.get(\lr)?TokenSmartcontractAddress
-                $('.lr-TokenAddress').attr \value, state.get(\lr)?TokenSmartcontractAddress
-        
-        if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
-
-
-        if state.get(\lr)?installments_count        != \0 => $('.lr-installments-count').attr \value,      +bigNum-toStr state.get(\lr)?installments_count      
-        if state.get(\lr)?installments_period_days  != \0 => $('.lr-installments-period').attr \value,     +bigNum-toStr state.get(\lr)?installments_period_days
-        if state.get(\lr)?installment_index         != \0 => $('.lr-installments-next-date').attr \value,  +bigNum-toStr state.get(\lr)?installment_index       
+    if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
+    if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
+    if state.get(\lr)?TokenSmartcontractAddress != big-zero
+            $('.lr-TokenName').attr \value,  smart-contract-converter state.get(\lr)?TokenSmartcontractAddress
+            $('.lr-TokenAddress').attr \value, state.get(\lr)?TokenSmartcontractAddress
+    
+    if state.get(\lr)?EnsDomainHash             != sha-zero => $('.lr-ensDomain').attr \value,                  state.get(\lr)?EnsDomainHash
 
 
-        $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
-        $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
+    if state.get(\lr)?installments_count        != \0 => $('.lr-installments-count').attr \value,      +bigNum-toStr state.get(\lr)?installments_count      
+    if state.get(\lr)?installments_period_days  != \0 => $('.lr-installments-period').attr \value,     +bigNum-toStr state.get(\lr)?installments_period_days
+    if state.get(\lr)?installment_index         != \0 => $('.lr-installments-next-date').attr \value,  +bigNum-toStr state.get(\lr)?installment_index       
+
+
+    $('.lr-TokenName').attr \value,     state.get(\lr)?TokenName
+    $('.lr-TokenInfoLink').attr \value, state.get(\lr)?TokenInfoLink      
 
 Template.loan_request.events do 
     'click .set-data':-> 
@@ -346,6 +353,10 @@ Template.loan_request.events do
             web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount,  gasPrice:20000000000}, goto-success-cb)
 
     'click .token-item-view':(event, target)-> 
+        if $(event.target).has-class \site-link
+            window.location.href = $(event.target).attr \href
+        if state.get(\lr).State != 0 
+            return event.prevent-default!
         $('#exampleModalLong').modal('hide')
         $(\.modal-backdrop).remove!
         addr = $(event.target).attr(\name) || $(event.target).parents(\.token-item-view).attr(\name)
