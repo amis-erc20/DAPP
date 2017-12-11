@@ -6,7 +6,6 @@ mizzao:bootboxjs
 twbs:bootstrap
 iron:router
 reactive-dict@1.1.9
-zenkogu:livescript-compiler
 meteorhacks:npm
 zardak:preludels
 shell-server@0.2.3
