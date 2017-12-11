@@ -51,13 +51,8 @@ T \success -> main_blaze do
 cycle=->
 	web3.eth.getTransactionReceipt state.get(\thash), (err, obj)~>
 		console.log \getTransactionReceipt: obj
-		if !(state.get \new_contract)
-			if obj
-				alert 'Transaction mined'
-				window.history.back!
-			else Meteor.setTimeout (-> cycle!), 200
 
-		else 
+		if (state.get \new_contract) 
 			if obj	
 				ledger.getLrCount (err, BN)->				
 					num = +lilNum-toStr(BN) 
@@ -71,6 +66,23 @@ cycle=->
 
 					else Meteor.setTimeout (-> cycle!), 200
 			else Meteor.setTimeout (-> cycle!), 200
+
+		else if (state.get \update_usd)
+			console.log \isNeedToUpdateEthToUsdRate ans	
+			ticker.isNeedToUpdateEthToUsdRate (err,ans)->
+
+				if ans == false
+					alert 'Rate updated'
+					window.history.back! 
+				else
+					Meteor.setTimeout (-> cycle!), 200
+
+		else
+			if obj
+				alert 'Transaction mined'
+				window.history.back!
+			else Meteor.setTimeout (-> cycle!), 200
+
 
 
 contract-details=(cb)-> web3.eth.getTransaction state.get(\thash), (err,res)-> cb(res)
