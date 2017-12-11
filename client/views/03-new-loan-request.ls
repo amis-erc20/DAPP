@@ -11,13 +11,6 @@ template \newLoanRequest -> main_blaze do
             b 'Loan Request'
             ' will be then available in ’All Loan Requests’ window.'
             br!
-            # br!
-            # "Credit Tokens (CRE) are credited to the borrower on successful loan"
-            # br!
-            # "repayment (loan amount of 1 ETH = 0.1 CRE). CRE represents the borrower’s credit rating. "
-            # br!
-            # br!
-            # "0.1 CRE allows to borrow up to 0.1 ETH without a collateral (reputation based lending)."
 
         d \.center,
             div class:'row', 
@@ -30,11 +23,6 @@ template \newLoanRequest -> main_blaze do
                     label class:'form-check-label',
                         input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios2' value:\1
                         "Domain"
-                # div class:'form-check',
-                #     label class:'form-check-label',
-                #         input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios3' value:\2
-                #         "Reputation"
-
             div class:'row', 
                 d \.header 'Currency'    
                 div class:'form-check',
@@ -80,5 +68,3 @@ Template.newLoanRequest.rendered =~>
         state.set \fee-sum fee-sum
         state.set \message-class ''
         state.set \loading-class \hidden
-
-
