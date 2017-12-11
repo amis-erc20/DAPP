@@ -1,5 +1,5 @@
 @tokens-list=-> new Array do
-	* id:\STK  address:\0x6C1Da3CAae658107c7a4A39348dADaD82fA58839 name:'Sample token' link:'https://kovan.etherscan.io/' description:'ERC20 token for development' 
+	* id:\BTC  address:\0x6C1Da3CAae658107c7a4A39348dADaD82fA58839 name:'Sample token' link:'https://kovan.etherscan.io/' description:'ERC20 token for development' 
 	* id:\EOS  address:\0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0 name:'EOS' link:'https://eos.io/' description:'EOS is a new cryptocurrency' 
 	* id:\QTUM address:\0x9a642d6b3368ddc662CA244bAdf32cDA716005BC name:'Qtum' link:'https://qtum.org/' description:'Combining a modified Bitcoin Core infrastructure with an intercompatible version of the Ethereum Virtual Machine (EVM), Qtum merges the reliability of Bitcoin’s unfailing blockchain with the endless possibilities provided by smart contracts.' 
 	* id:\OMG  address:\0xd26114cd6EE289AccF82350c8d8487fedB8A0C07 name:'OmiseGO' link:'https://omisego.network/' description:'OmiseGO is a public Ethereum-based financial technology for use in mainstream digital wallets, that enables real-time, peer-to-peer value exchange and payment services agnostically across jurisdictions and organizational silos, and across both fiat money and decentralized currencies.' 

@@ -47,8 +47,14 @@ input-box =~> #div class:\input-box,
             slider(\installment 'Installment count')     if state.get(\lr)?State == 0
             slider(\period 'Installment period (days)')  if state.get(\lr)?State == 0
 
-            slider(\amount  'Amount')   if state.get(\lr)?State == 0
-            slider(\premium 'Premium')  if state.get(\lr)?State == 0
+
+            if (state.get(\lr)?currency ==0)
+                slider(\amount  'Amount (ETH)')   if state.get(\lr)?State == 0
+
+            if (state.get(\lr)?currency ==1)
+                slider(\amount  'Amount (USD)')   if state.get(\lr)?State == 0
+
+            slider(\premium 'Premium (% of amount)')  if state.get(\lr)?State == 0
 
 
             text-and-button!
@@ -194,18 +200,18 @@ Template.loan_request.created=->
     $ \.amount-slider .slider do 
         disabled: !state.get(\IamBorrower)
         create:(event,ui)-> 
-            $(\#custom-handle-amount).text val.to-fixed 4 #$(this).slider \value
+            $(\#custom-handle-amount).text take 6 val.to-fixed 3 #$(this).slider \value
             $(this).attr \value val
         
         slide:(event,ui)-> 
-            $(\#custom-handle-amount).text(ui.value.to-fixed 4)
-            $(this).attr \value ui.value.to-fixed 4
+            $(\#custom-handle-amount).text(take 6 ui.value.to-fixed 3)
+            $(this).attr \value take 6 ui.value.to-fixed 3
         range: \min
         min: mn
         max: mx
         step: step
         value: val
-    $(\#custom-handle-amount).text val.to-fixed 4
+    $(\#custom-handle-amount).text take 6 val.to-fixed 3
 
 
 Template.loan_request.rendered =->
@@ -319,14 +325,18 @@ Template.loan_request.events do
         out.installments_count  = +$(\.installment-slider).attr \value  
         out.installments_period = +$(\.period-slider).attr \value 
  
-
         if state.get(\lr)?currency == 0
-            out.ethamount = eth-to-wei $(\.lr-WantedWei).val!
-            out.premium   = eth-to-wei $(\.lr-PremiumWei).val!
+            amount = +$(\.amount-slider).attr \value  
+            pre    = +$(\.premium-slider).attr \value 
 
-        else 
-            out.ethamount =  (+$(\.lr-WantedWei).val! ) * 100
-            out.premium   =  (+$(\.lr-PremiumWei).val!) * 100
+            out.ethamount = eth-to-wei String amount
+            out.premium  = eth-to-wei String amount*pre/100
+
+        else       
+            amount = +$(\.amount-slider).attr \value 
+            pre    = + $(\.premium-slider).attr \value 
+            out.ethamount = amount * 100
+            out.premium  = amount * pre
 
 
         out.bor       = $(\.lr-Borrower).val!
@@ -339,16 +349,7 @@ Template.loan_request.events do
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
 
-        
-        console.log \out.ethamount: out.ethamount
-        console.log \out.tokamount: out.tokamount
-        console.log \out.premium: out.premium
-        console.log \out.tokname: out.tokname
-        console.log \out.link: out.link
-        console.log \out.smart: out.smart
-        console.log \out.installments_count: out.installments_count
-        console.log \out.installments_period: out.installments_period
-        console.log \out.ensDomainHash: out.ensDomainHash
+        console.log \out: out
 
         lr.setData(state.get \address )(
             out.ethamount,
@@ -408,14 +409,21 @@ Template.loan_request.events do
         id = $(event.target).attr(\id) || $(event.target).parents(\.token-item-view).attr(\id)
         current_val = state.get(\prices) |> filter (.symbol==id) |> -> it?0
         price_eth = current_val?price_eth
+        price_usd = current_val?price_usd
         state.set \current_val,  current_val
 
         token_count = $(\.lr-TokenAmount).val! || 1
 
-        mx = (1.5 * token_count) * price_eth
-        mn = (0.5 * token_count) * price_eth
-        step = (mx - mn) / 100
-        val = (mx - mn) / 2
+        if state.get(\lr)?currency == 0
+            mx = (1.5 * token_count) * price_eth
+            mn = (0.5 * token_count) * price_eth
+            step = (mx - mn) / 100
+            val = (mx - mn) / 2
+        else 
+            mx = (1.5 * token_count) * price_usd
+            mn = (0.5 * token_count) * price_usd
+            step = (mx - mn) / 100
+            val = (mx - mn) / 2
 
         console.log 
         init-amount-slider mn, mx, step, val
@@ -477,15 +485,21 @@ Template.loan_request.events do
         
         if cls == \lr-TokenAmount
             
-
             price_eth = +state.get(\current_val)?price_eth
+            price_usd = +state.get(\current_val)?price_usd
             token_count = $(\.lr-TokenAmount).val! || 1
-            # price_eth := price_eth 
 
-            mx = (1.5 * token_count) * price_eth
-            mn = (0.5 * token_count) * price_eth
-            step = (mx - mn) / 100
-            val = (mx - mn) / 2
+            if state.get(\lr)?currency == 0
+                mx = (1.5 * token_count) * price_eth
+                mn = (0.5 * token_count) * price_eth
+                step = (mx - mn) / 100
+                val = (mx - mn) / 2
+            else 
+                mx = (1.5 * token_count) * price_usd
+                mn = (0.5 * token_count) * price_usd
+                step = (mx - mn) / 100
+                val = (mx - mn) / 2
+
             init-amount-slider mn, mx, step, val
 
 
@@ -533,9 +547,6 @@ input-fields-column =->
     field-array = []
     rep = state.get(\bor-balance)
 
-    field-array.push c:'lr-Borrower input-primary-short'  n:'Borrower'             d:true       red-dot:state.get(\IamBorrower)
-    field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
-
     if (state.get(\lr)?currency == 0)
         if (not state.get(\lr)?isEns)
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
@@ -544,22 +555,30 @@ input-fields-column =->
             field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
             field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
       
-    if (state.get(\lr)?currency == 1)
+    if (state.get(\lr)?currency == 1)    
+        field-array.push c:'lr-usdrate input-primary-short'   n:'Usd to Eth rate'            d:true
+
         if (not state.get(\lr)?isEns) 
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
 
         if (state.get(\lr)?isEns)
-            field-array.push c:'lr-WantedWei'                                     n:'Amount (SUD)'                 d:disableQ!, placeholder:'0.00 Usd'     
             field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
 
-        field-array.push c:'lr-usdrate input-primary-short'   n:'Usd to Eth rate'            d:true
+    field-array.push c:'lr-Borrower input-primary-short'  n:'Borrower'             d:true       red-dot:state.get(\IamBorrower)
+    field-array.push c:'lr-Lender input-primary-short'    n:'Lender'               d:true       red-dot:state.get(\IamLender)
 
     if state.get(\lr)?State != 0
         field-array.push c:'lr-installments-count input-primary-short'     n:'Installments paid'               d:true v:"#{state.get(\lr)?installments_paid} of #{state.get(\lr)?installments_count}"
         field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
-        field-array.push c:'lr-installments-left input-primary-short'    n:'Days to pay left' d:true v:state.get(\lr)?days_left     
-        field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'           
-        field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
+        field-array.push c:'lr-installments-left input-primary-short'      n:'Days to pay left' d:true v:state.get(\lr)?days_left     
+
+        if (state.get(\lr)?currency == 1)
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (USD)'              d:disableQ!, placeholder:'0.00 Eth'           
+            field-array.push c:'lr-PremiumWei'                                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Eth'       
+            
+        if (state.get(\lr)?currency == 0)
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'           
+            field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
 
 
     map input-unit, field-array
