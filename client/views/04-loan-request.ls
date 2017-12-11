@@ -81,7 +81,7 @@ text-and-button=-> div class:\text-aligned,
         button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
 
     if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
-        D "loan-prebutton-text", "Please, transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) }  to this Loan Request address - #{state.get \address } and click on the button"
+        D "loan-prebutton-text", "Please, transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) }  to this Loan Request address - #{state.get \address }"
         # button class:'card-button bgc-primary loan-button transfer-tokens', "Check that #{ ensQ('tokens are', 'domain is') } transferred"
     if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Borrower should transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) } to this Loan Request address - #{state.get \address }"
