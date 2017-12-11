@@ -415,13 +415,13 @@ Template.loan_request.events do
         token_count = $(\.lr-TokenAmount).val! || 1
 
         if state.get(\lr)?currency == 0
-            mx = (1.5 * token_count) * price_eth
-            mn = (0.5 * token_count) * price_eth
+            mx = (0.67 * token_count) * price_eth
+            mn = 0
             step = (mx - mn) / 100
             val = (mx - mn) / 2
         else 
-            mx = (1.5 * token_count) * price_usd
-            mn = (0.5 * token_count) * price_usd
+            mx = (0.67 * token_count) * price_usd
+            mn = 0
             step = (mx - mn) / 100
             val = (mx - mn) / 2
 
@@ -490,13 +490,13 @@ Template.loan_request.events do
             token_count = $(\.lr-TokenAmount).val! || 1
 
             if state.get(\lr)?currency == 0
-                mx = (1.5 * token_count) * price_eth
-                mn = (0.5 * token_count) * price_eth
+                mx = (0.67 * token_count) * price_eth
+                mn = 0
                 step = (mx - mn) / 100
                 val = (mx - mn) / 2
             else 
-                mx = (1.5 * token_count) * price_usd
-                mn = (0.5 * token_count) * price_usd
+                mx = (0.67 * token_count) * price_usd
+                mn = 0
                 step = (mx - mn) / 100
                 val = (mx - mn) / 2
 
