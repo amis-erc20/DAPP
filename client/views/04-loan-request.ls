@@ -179,9 +179,9 @@ Template.loan_request.created=->
         state.set \lr-Lender   &1?Lender
         state.set \lr-Borrower &1?Borrower
         state.set \lr-State    &1?State
-        state.set \IamLender   (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Lender).toUpperCase())       
+        state.set \IamLender   (web3.eth.defaultAccount?toUpperCase()==state.get(\lr-Lender)?toUpperCase())       
 
-        state.set \IamBorrower (web3.eth.defaultAccount.toUpperCase()==state.get(\lr-Borrower).toUpperCase())   
+        state.set \IamBorrower (web3.eth.defaultAccount?toUpperCase()==state.get(\lr-Borrower)?toUpperCase())   
 
         state.set \bor-balance 0
 
@@ -197,22 +197,23 @@ Template.loan_request.created=->
 
 
 @init-amount-slider=(mn,mx,step,val)-> 
-    if isNaN val => val = 0
+    # if isNaN +val => val = 0
+    
     $ \.amount-slider .slider do 
         disabled: !state.get(\IamBorrower)
         create:(event,ui)-> 
-            $(\#custom-handle-amount).text take 6 val.to-fixed 3 #$(this).slider \value
-            $(this).attr \value val
+            $(\#custom-handle-amount).text take 6 (val || 0).to-fixed 3 #$(this).slider \value
+            $(this).attr \value val ||0
         
         slide:(event,ui)-> 
-            $(\#custom-handle-amount).text(take 6 ui.value.to-fixed 3)
-            $(this).attr \value take 6 ui.value.to-fixed 3
+            $(\#custom-handle-amount).text(take 6 (ui.value ||0).to-fixed 3)
+            $(this).attr \value $(\#custom-handle-amount).text!
         range: \min
         min: mn
         max: mx
         step: step
         value: val
-    $(\#custom-handle-amount).text take 6 val.to-fixed 3
+    $(\#custom-handle-amount).text take 6 (val || 0).to-fixed 3
 
 
 Template.loan_request.rendered =->
@@ -321,16 +322,15 @@ Template.loan_request.events do
         out.installments_count  = +$(\.installment-slider).attr \value  
         out.installments_period = +$(\.period-slider).attr \value 
  
-        if state.get(\lr)?currency == 0
-            amount = +$(\.amount-slider).attr \value  
-            pre    = +$(\.premium-slider).attr \value 
+        amount = +$(\#custom-handle-amount).html!
+        pre    = $(\#custom-handle-premium).html! 
+        pre   := take (pre.length - 1), pre
 
+        if state.get(\lr)?currency == 0
             out.ethamount = eth-to-wei String amount
             out.premium  = eth-to-wei String amount*pre/100
 
         else       
-            amount = +$(\.amount-slider).attr \value 
-            pre    = + $(\.premium-slider).attr \value 
             out.ethamount = amount * 100
             out.premium  = amount * pre
 
@@ -506,6 +506,7 @@ Template.loan_request.events do
 
 
     'click .update-rate':->
+        state.set \update_usd true
         web3.eth.contract(config.TICKER-ABI).at(config.ETH_TICKER_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
 
 
