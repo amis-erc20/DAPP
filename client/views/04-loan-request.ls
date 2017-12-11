@@ -197,6 +197,7 @@ Template.loan_request.created=->
 
 
 @init-amount-slider=(mn,mx,step,val)-> 
+    if isNaN val => val = 0
     $ \.amount-slider .slider do 
         disabled: !state.get(\IamBorrower)
         create:(event,ui)-> 
@@ -245,10 +246,7 @@ Template.loan_request.rendered =->
         step: 1
         value: 1
 
-
-    init-amount-slider 1 100 1 10
-
-
+    init-amount-slider 0 0 0 0
 
     $ \.premium-slider .slider do 
         disabled: !state.get(\IamBorrower)
@@ -264,8 +262,6 @@ Template.loan_request.rendered =->
         max: 100
         step: 1
         value: 10
-
-
 
     global.rate = +state.get(\lr)?rate
     global.was  = +state.get(\lr)?was
@@ -311,8 +307,8 @@ Template.loan_request.rendered =->
 
     
     if state.get(\lr)?TokenSmartcontractAddress
-        console.log  $('[address="' + state.get(\lr)?TokenSmartcontractAddress?toLocaleLowerCase! + '"]')
-        $('[name="' + state.get(\lr)?TokenSmartcontractAddress + '"]').add-class \active
+        console.log  $('[address="' + state.get(\lr)?TokenSmartcontractAddress.toLocaleLowerCase! + '"]')
+        $('[address="' + state.get(\lr)?TokenSmartcontractAddress.toLocaleLowerCase! + '"]').add-class \active
 
 
     b-text = state.get(\lr)?TokenName
@@ -412,7 +408,7 @@ Template.loan_request.events do
         price_usd = current_val?price_usd
         state.set \current_val,  current_val
 
-        token_count = $(\.lr-TokenAmount).val! || 1
+        token_count = +$(\.lr-TokenAmount).val! || 1
 
         if state.get(\lr)?currency == 0
             mx = (0.67 * token_count) * price_eth
