@@ -1,4 +1,5 @@
 @tokens-list=-> new Array do
+	* id:\LEND address:\0x80fB784B7eD66730e8b1DBd9820aFD29931aab03 name:'Ethlend' link:'https://ethlend.io' description:'Fully decentralized peer to peer lending on the Ethereum Blockchain.'
 	* id:\BTC  address:\0x6C1Da3CAae658107c7a4A39348dADaD82fA58839 name:'Sample token' link:'https://kovan.etherscan.io/' description:'ERC20 token for development' 
 	
 	* id:\EOS  address:\0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0 name:'EOS' link:'https://eos.io/' description:'Infrastructure for Decentralized Applications' 

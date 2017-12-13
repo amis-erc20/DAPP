@@ -38,7 +38,7 @@ red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
 red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''     
 
 input-box =~> #div class:\input-box, 
-    if false => null#state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
+    if state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
     else 
         div class:\input-box,
             if !state.get(\lr)?isEns =>  tokens-select!
