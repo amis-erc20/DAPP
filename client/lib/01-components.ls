@@ -41,7 +41,7 @@ T \success -> main_blaze do
 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 
 			'Please wait. Action will be completed in the next few minutes'
 			br!
-			"Transaction hash: #{state.get(\thash)}"
+			if state.get(\thash) => "Transaction hash: #{state.get(\thash)}"
 			br!		
 			cycle!
 

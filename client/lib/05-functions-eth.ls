@@ -55,7 +55,7 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 	ledger.getFeeSum ->						out.feeSum = &1
 
 	ticker.ethPriceInUsd ->				     out.rate = (+&1).to-fixed 2
-	lr.wasEthWhenCreated(address) ->			out.was = +lilNum-toStr &1
+	lr.wasEthWhenCreated(address) ->			out.was = (0.01/(+bigNum-toStr &1)).to-fixed 2
 
 
 
