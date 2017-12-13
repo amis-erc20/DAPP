@@ -41,20 +41,20 @@ input-box =~> #div class:\input-box,
     if state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
     else 
         div class:\input-box,
+            if !state.get(\lr)?isEns =>  tokens-select!
             input-fields-column!
-            tokens-select!
-
+        
             slider(\installment 'Installment count')     if state.get(\lr)?State == 0
             slider(\period 'Installment period (days)')  if state.get(\lr)?State == 0
 
+            if !state.get(\lr)?isEns
+                if (state.get(\lr)?currency ==0)
+                    slider(\amount  'Amount (ETH)')   if state.get(\lr)?State == 0
 
-            if (state.get(\lr)?currency ==0)
-                slider(\amount  'Amount (ETH)')   if state.get(\lr)?State == 0
+                if (state.get(\lr)?currency ==1)
+                    slider(\amount  'Amount (USD)')   if state.get(\lr)?State == 0
 
-            if (state.get(\lr)?currency ==1)
-                slider(\amount  'Amount (USD)')   if state.get(\lr)?State == 0
-
-            slider(\premium 'Premium (% of amount)')  if state.get(\lr)?State == 0
+                slider(\premium 'Premium (% of amount)')  if state.get(\lr)?State == 0
 
 
             text-and-button!
@@ -322,25 +322,31 @@ Template.loan_request.events do
         out.installments_count  = +$(\.installment-slider).attr \value  
         out.installments_period = +$(\.period-slider).attr \value 
  
-        amount = +$(\#custom-handle-amount).html!
-        pre    = $(\#custom-handle-premium).html! 
-        pre   := take (pre.length - 1), pre
 
-        if state.get(\lr)?currency == 0
-            out.ethamount = eth-to-wei String amount
-            out.premium  = eth-to-wei String amount*pre/100
+        if (not state.get(\lr)?isEns) 
+            amount = +$(\#custom-handle-amount).html!
+            pre    = $(\#custom-handle-premium).html! 
+            pre   := take (pre.length - 1), pre
 
-        else       
-            out.ethamount = amount * 100
-            out.premium  = amount * pre
+            if state.get(\lr)?currency == 0
+                out.ethamount = eth-to-wei String amount
+                out.premium  = eth-to-wei String amount*pre/100
 
+            else       
+                out.ethamount = amount * 100
+                out.premium  = amount * pre
+
+
+        else 
+            out.ethamount = eth-to-wei($(\.lr-WantedWei).val!   || 0)
+            out.premium  =  eth-to-wei($(\.lr-PremiumWei).val!  || 0)
 
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
         out.tokamount = +$(\.lr-TokenAmount).val!   || 0
         out.tokname   = smart-contract-converter(state.get \token-address) || ''
-        out.smart     = state.get \token-address
+        out.smart     = state.get(\token-address)|| 0
         out.link      = $(\.lr-TokenInfoLink).val! || ''
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
@@ -544,13 +550,14 @@ input-fields-column =->
     field-array = []
     rep = state.get(\bor-balance)
 
+
     if (state.get(\lr)?currency == 0)
         if (not state.get(\lr)?isEns)
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
-
         if (state.get(\lr)?isEns)
-            field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'     
             field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'           
+            field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
       
     if (state.get(\lr)?currency == 1)    
         field-array.push c:'lr-usdrate input-primary-short'   n:'Usd to Eth rate'            d:true
@@ -559,6 +566,8 @@ input-fields-column =->
             field-array.push c:'lr-TokenAmount' n:'Token amount'     d:disableQ!, placeholder:'0'      
 
         if (state.get(\lr)?isEns)
+            field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'           
+            field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
             field-array.push c:'lr-ensDomain'   n:'ENS Domain Hash'  d:disableQ!                                
 
     field-array.push c:'lr-Borrower input-primary-short'  n:'Borrower'             d:true       red-dot:state.get(\IamBorrower)
@@ -569,11 +578,11 @@ input-fields-column =->
         field-array.push c:'lr-installments-period input-primary-short'    n:'Installment Period (days)' d:true v:state.get(\lr)?installments_period_days     
         field-array.push c:'lr-installments-left input-primary-short'      n:'Days to pay left' d:true v:state.get(\lr)?days_left     
 
-        if (state.get(\lr)?currency == 1)
+        if (state.get(\lr)?currency == 1) && !(state.get(\lr)?isEns)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (USD)'              d:disableQ!, placeholder:'0.00 Eth'           
             field-array.push c:'lr-PremiumWei'                                    n:'Premium (USD)'             d:disableQ!, placeholder:'0.00 Eth'       
             
-        if (state.get(\lr)?currency == 0)
+        if (state.get(\lr)?currency == 0) && !(state.get(\lr)?isEns)
             field-array.push c:'lr-WantedWei'                                     n:'Amount (ETH)'                 d:disableQ!, placeholder:'0.00 Eth'           
             field-array.push c:'lr-PremiumWei'                                    n:'Premium (ETH)'             d:disableQ!, placeholder:'0.00 Eth'       
 
