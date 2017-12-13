@@ -1,0 +1,45 @@
+<template name="info">
+    <div class="info">
+        <h4 class="info-key">Eth is enabled</h4>
+        <p class="info-value">{{yesno}}</p>
+        <h4 class="info-key">Your address</h4>
+        <p class="info-value defaultAccount">
+            <a target="_blank" class="account-link"
+               href="https://etherscan.io/address/0xb69255fd490e1f0bd1af797afdcf5c9a124217ad">
+                0xb69255fd490e1f0bd1af797afdcf5c9a124217ad
+            </a>
+        </p>
+        <h4 class="info-key">Your balance</h4>
+        <p class="info-value balance">0 ETH</p>
+        <h4 class="info-key">Ledger contract address</h4>
+        <p class="info-value">
+            <a target="_blank"
+               href="{{ethMainAddressLink}}">
+                {{ethMainAddress}}
+            </a>
+        </p><h4 class="info-key">ENS registry address</h4>
+        <p class="info-value">
+            <a target="_blank"
+               href="https://etherscan.io/address/{{ensRegAddress}}">
+                {{ensRegAddress}}
+            </a>
+        </p>
+        <h4 class="info-key">Your reputation</h4>
+        <p class="info-value reputation"></p>
+        <h4 class="info-key">Credit Token (CRE)</h4>
+        <p class="info-value">
+            <a target="_blank"
+               href="https://etherscan.io/address/{{repAddress}}">
+                {{repAddress}}
+            </a>
+        </p>
+        <h4 class="info-key">First EthLend ver.</h4>
+        <p class="info-value">
+            <a target="_blank" href="http://oldest.ethlend.io">oldest.ethlend.io</a>
+        </p>
+        <h4 class="info-key">Second EthLend ver.</h4>
+        <p class="info-value">
+            <a target="_blank" href="http://old.ethlend.io">old.ethlend.io</a>
+        </p>
+    </div>
+</template>

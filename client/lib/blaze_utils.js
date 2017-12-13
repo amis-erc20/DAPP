@@ -1,4 +1,3 @@
-var this$ = this;
 this.template = function(name, func){
 	return Template[name] = new Template("Template" + name, func);
 };

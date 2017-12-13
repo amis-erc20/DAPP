@@ -2,25 +2,33 @@ var createQuartet, createQuartetPage, rerender, getPremium, this$ = this, slice$
 Router.route('mainTemplate', {
 	path: '/main/:page'
 });
+
 template('mainTemplate', function(){
-	return main_blaze(notFoundComponent('Not found', 'No Loan Requests found'), D('card-wrapper', progressBar(), D("card-und-nav " + state.get('quartet-class'), D("card-wrapper-aligned", D('div', map(cardTemplate, state.get('quartet') || []))), linkPanel('main'))));
+	return main_blaze(
+		notFoundComponent('Not found', 'No Loan Requests found'),
+		D('card-wrapper', progressBar(),
+		D("card-und-nav " + state.get('quartet-class'),
+		D("card-wrapper-aligned",
+		D('div', map(cardTemplate, state.get('quartet') || []))), linkPanel('main'))));
 });
+
 this.cardClass = function(it){
-	if (it != null && it.isEns) {
+	if (it !== null && it.isEns) {
 		return 'ens';
 	}
-	if (it != null && it.isRep) {
+	if (it !== null && it.isRep) {
 		return 'rep';
 	}
 	if (!it.isEns && !it.isRep) {
 		return 'tokens';
 	}
 };
+
 this.cardTemplate = function(it){
 	var ref$, ref1$, ref2$, ref3$, ref4$, ref5$, ref6$, ref7$, ref8$, ref9$, ref10$;
 	return a({
 		'class': "card " + cardClass(it),
-		href: "/loan-request/" + (it != null ? it.id : void 8)
+		href: "/loan-request/" + (it !== null ? it.id : void 8)
 	}, div({
 		'class': "card-header " + cardClass(it)
 	}, it.State > 0
@@ -28,16 +36,16 @@ this.cardTemplate = function(it){
 			'class': 'div'
 		}, h3({
 			'class': 'card-header-amount'
-		}, bigNumToStr(it.WantedWei) + " Eth"), !it.isEns && !it.isRep ? bigNumToStr(it.WantedWei).length < 10 ? ((ref$ = bigNumToStr(it != null ? it.TokenAmount : void 8)) != null ? ref$.length : void 8) + (it != null ? (ref1$ = it.TokenName) != null ? ref1$.length : void 8 : void 8) < 20
+		}, bigNumToStr(it.WantedWei) + " Eth"), !it.isEns && !it.isRep ? bigNumToStr(it.WantedWei).length < 10 ? ((ref$ = bigNumToStr(it !== null ? it.TokenAmount : void 8)) !== null ? ref$.length : void 8) + (it !== null ? (ref1$ = it.TokenName) !== null ? ref1$.length : void 8 : void 8) < 20
 			? h3({
 				'class': 'card-header-inscription token-am'
-			}, (it != null ? it.TokenName : void 8) + " (" + (it != null ? it.TokenAmount : void 8) + ")")
+			}, (it !== null ? it.TokenName : void 8) + " (" + (it !== null ? it.TokenAmount : void 8) + ")")
 			: h3({
 				'class': 'card-header-inscription token-am'
-			}, (it != null ? it.TokenName : void 8) + "") : void 8 : void 8, it.isEns ? h3({
+			}, (it !== null ? it.TokenName : void 8) + "") : void 8 : void 8, it.isEns ? h3({
 			'class': 'card-header-inscription token-am'
 		}, 'ENS domain') : void 8)
-		: ((ref2$ = it.Borrower) != null ? ref2$.toUpperCase() : void 8) === (typeof web3 != 'undefined' && web3 !== null ? (ref3$ = web3.eth) != null ? (ref4$ = ref3$.defaultAccount) != null ? ref4$.toUpperCase() : void 8 : void 8 : void 8)
+		: ((ref2$ = it.Borrower) !== null ? ref2$.toUpperCase() : void 8) === (typeof web3 !== 'undefined' && web3 !== null ? (ref3$ = web3.eth) !== null ? (ref4$ = ref3$.defaultAccount) !== null ? ref4$.toUpperCase() : void 8 : void 8 : void 8)
 			? h3({
 				'class': 'card-header-amount'
 			}, "Please, set the data")
@@ -45,7 +53,7 @@ this.cardTemplate = function(it){
 				'class': 'card-header-amount'
 			}, "Data must be set by the Borrower")), div({
 		'class': 'card-body'
-	}, ((ref5$ = web3.eth.defaultAccount) != null ? ref5$.toUpperCase() : void 8) === ((ref6$ = it.Borrower) != null ? ref6$.toUpperCase() : void 8) ? img({
+	}, ((ref5$ = web3.eth.defaultAccount) !== null ? ref5$.toUpperCase() : void 8) === ((ref6$ = it.Borrower) !== null ? ref6$.toUpperCase() : void 8) ? img({
 		'class': 'img-dot',
 		src: '/img/red_dot.svg',
 		alt: ''
@@ -53,7 +61,7 @@ this.cardTemplate = function(it){
 		'class': 'card-key'
 	}, "Borrower"), p({
 		'class': "card-value " + cardClass(it)
-	}, it.Borrower), (it != null ? it.State : void 8) !== 3 ? D('div-lender', ((ref7$ = web3.eth.defaultAccount) != null ? ref7$.toUpperCase() : void 8) === ((ref8$ = it.Lender) != null ? ref8$.toUpperCase() : void 8) ? img({
+	}, it.Borrower), (it !== null ? it.State : void 8) !== 3 ? D('div-lender', ((ref7$ = web3.eth.defaultAccount) !== null ? ref7$.toUpperCase() : void 8) === ((ref8$ = it.Lender) !== null ? ref8$.toUpperCase() : void 8) ? img({
 		'class': 'img-dot',
 		src: '/img/red_dot.svg',
 		alt: ''
@@ -61,7 +69,7 @@ this.cardTemplate = function(it){
 		'class': 'card-key font-weight-normal'
 	}, "Lender"), p({
 		'class': "card-value " + cardClass(it)
-	}, it.Lender !== bigZero ? it.Lender : '–––')) : void 8, (it != null ? it.State : void 8) === 3 && ((ref9$ = it.Borrower) != null ? ref9$.toUpperCase() : void 8) !== ((ref10$ = web3.eth.defaultAccount) != null ? ref10$.toUpperCase() : void 8) ? h4({
+	}, it.Lender !== bigZero ? it.Lender : '–––')) : void 8, (it !== null ? it.State : void 8) === 3 && ((ref9$ = it.Borrower) !== null ? ref9$.toUpperCase() : void 8) !== ((ref10$ = web3.eth.defaultAccount) !== null ? ref10$.toUpperCase() : void 8) ? h4({
 		'class': "card-key-inscription",
 		style: 'color:black'
 	}, "Get " + getPremium(it.PremiumWei) + "Premium!") : void 8, div({
@@ -70,8 +78,9 @@ this.cardTemplate = function(it){
 		'class': 'card-key font-weight-normal'
 	}, "State"), p({
 		'class': "card-value " + cardClass(it)
-	}, stateIntToStr(it != null ? it.State : void 8, it != null && it.isEns ? 'domain' : 'tokens')))));
+	}, stateIntToStr(it !== null ? it.State : void 8, it !== null && it.isEns ? 'domain' : 'tokens')))));
 };
+
 this.emptyList = function(){
 	return div({
 		style: 'padding:100px',
@@ -82,11 +91,13 @@ this.emptyList = function(){
 		style: 'font-size:20px; padding-top:15px;padding-bottom:15px'
 	}, 'That is no loan requests here.'));
 };
+
 this.getCardData = function(number, cb){
 	return ledger.getLr(number, function(){
 		return getAllLrData(arguments[1])(cb);
 	});
 };
+
 this.progressBar = function(percent){
 	return div({
 		style: 'padding:100px; padding-right:120px',
@@ -97,6 +108,7 @@ this.progressBar = function(percent){
 		style: 'font-size:20px; padding-top:15px;padding-bottom:15px'
 	}, 'Please wait for the data to be downloaded from Ethereum network...'));
 };
+
 createQuartet = function(start, cb){
 	var out, loadOneCard, Undef, cycle;
 	out = [];
@@ -113,8 +125,10 @@ createQuartet = function(start, cb){
 			}
 		});
 	};
+	
 	map(loadOneCard, [0, 1, 2, 3]);
 	Undef = false;
+	
 	cycle = function(){
 		if (typeof out[0] === 'undefined') {
 			return Meteor.setTimeout(function(){
@@ -141,6 +155,7 @@ createQuartet = function(start, cb){
 	};
 	return cycle();
 };
+
 createQuartetPage = function(start){
 	state.set('percent', 0);
 	return createQuartet(start, function(err, res){
@@ -155,6 +170,7 @@ createQuartetPage = function(start){
 		}
 	});
 };
+
 Template.mainTemplate.rendered = function(){};
 Template.mainTemplate.created = function(){
 	state.set('quartet', '');
@@ -176,6 +192,7 @@ Template.mainTemplate.created = function(){
 		return rerender();
 	}
 };
+
 rerender = function(){
 	return ledger.getLrCount(function(){
 		var totalReqs;
@@ -188,6 +205,7 @@ rerender = function(){
 		return createQuartetPage(totalReqs - state.get('page') * 4 + 3);
 	});
 };
+
 Template.mainTemplate.events({
 	'click .chevron-right': function(){
 		state.set('quartet-class', 'hidden');
@@ -210,6 +228,7 @@ Template.mainTemplate.events({
 		return rerender();
 	}
 });
+
 getPremium = function(it){
 	if (bigNumToStr(it).length > 7) {
 		return 'the ';
@@ -217,6 +236,7 @@ getPremium = function(it){
 		return "+ " + bigNumToStr(it) + " ETH ";
 	}
 };
+
 this.gotoPagemain = function(){
 	state.set('page', arguments[0]);
 	if (+state.get('page') < 1) {
@@ -229,14 +249,15 @@ this.gotoPagemain = function(){
 	Router.go("/" + arguments[1] + "/" + state.get('page'));
 	return rerender();
 };
+
 this.linkPanel = function(type){
 	var currentPage, leftChevron, rightChevron, count, pages, linkArr, res$, i$, ridx$, to$, getLink;
 	currentPage = +addressLast();
 	leftChevron = a({
-		'class': "chevron-left arrows " + (state.get('page') == '1' ? 'disabled' : void 8)
+		'class': "chevron-left arrows " + (state.get('page') === '1' ? 'disabled' : void 8)
 	}, '‹‹');
 	rightChevron = a({
-		'class': "chevron-right arrows " + (state.get('page') == ceiling(state.get('totalReqs') / 4) ? 'disabled' : void 8)
+		'class': "chevron-right arrows " + (state.get('page') === ceiling(state.get('totalReqs') / 4) ? 'disabled' : void 8)
 	}, '››');
 	count = state.get('totalReqs');
 	console.log('totalReqs', state.get('totalReqs'));
@@ -286,6 +307,7 @@ this.linkPanel = function(type){
 		'class': 'pagination menu'
 	}, leftChevron, map(partialize$.apply(this, [getLink, [void 8, type], [0]]), linkArr), rightChevron);
 };
+
 function partialize$(f, args, where){
 	var context = this;
 	return function(){

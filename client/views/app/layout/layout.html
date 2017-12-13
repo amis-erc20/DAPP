@@ -1,0 +1,44 @@
+<template name="layout">
+    <head>
+        <link rel="icon" href="/icon/favicon.ico" type="image/x-icon"/>
+        <link rel="shortcut icon" href="/icon/favicon.ico" type="image/x-icon"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0, initial-scale=1">
+        <meta name="description" content="">
+
+        <meta charset="UTF-8">
+        <title>EthLend</title>
+    </head>
+    <body>
+    <header>
+        <a class="logo" href="/main/1"><img class="logo-image" src="/img/logo.png" alt="EthLend logo"></a>
+        <nav class="navigation">
+            <div class="nav-link-wrapper"><a class="nav-link js-gitter-toggle-chat-button">Chat</a></div>
+            <div class="nav-link-wrapper selected"><a class="nav-link" href="/main/1">All Loan Requests</a></div>
+            <div class="nav-link-wrapper undefined"><a class="nav-link" href="/funded/1">Funded Loan Requests</a></div>
+            <div class="nav-link-wrapper undefined">
+                <span
+                        class="glyphicon glyphicon-plus-sign"
+                        ariahidden="true" style="color:white; position:relative; left:15px; top:2px;">
+                </span>
+                <a class="nav-link with-icon" href="/new-loan-request">New Loan Request</a></div>
+            <div class="nav-link-wrapper undefined"><a class="nav-link" href="/info">Info</a></div>
+        </nav>
+    </header>
+    <div class="main-shell">
+        <div>
+            <main>
+                {{> yield}}
+            </main>
+        </div>
+    </div>
+    </body>
+    <footer>
+        <div class="footer-nav">
+            <a class="footer-link" href="/main/1">Home</a>
+            <a class="footer-link" href="http://about.ethlend.io">About EthLеnd</a>
+            <a class="footer-link" href="/faq">FAQs</a>
+        </div>
+        <p class="footer-inscription">EthLend ©2017</p>
+    </footer>
+</template>

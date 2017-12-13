@@ -1,0 +1,18 @@
+<template name="newLoanRequest">
+    <main>
+        <div class="message {{messageClass}}">
+            <p style="font-size:20px">This includes <b>{{calculateFee}} ETH</b> deployment fees and can take 3-5
+            minutes</p>
+            <p style="font-size:20px">New <b>Loan Request</b> will be then available in ’All Loan Requests’
+                window.<br><br>Credit Tokens (CRE) are credited to the borrower on successful loan<br>repayment (loan
+                amount of 1 ETH = 0.1 CRE). CRE represents the borrower’s credit rating. <br><br>0.1 CRE allows to
+                borrow up to 0.1 ETH without a collateral (reputation based lending).</p>
+            <div class="new-loan-group">
+                <div class="new-loan-text">New loan request:</div>
+            </div>
+            <button class="new-loan-request card-button bgc-primary blue">Tokens</button>
+            <button class="new-domain-request card-button bgc-primary blue">Domain</button>
+            <button class="new-rep-request card-button bgc-primary red">Reputation</button>
+        </div>
+    </main>
+</template>

@@ -3,25 +3,16 @@ Router.route('new_loan_request', {
 	path: 'new-loan-request',
 	template: 'newLoanRequest'
 });
-template('newLoanRequest', function(){
-	return main_blaze(loadingComponent(), div({
-		'class': "message " + state.get('message-class')
-	}, p({
-		style: 'font-size:20px'
-	}, "This includes ", b(state.get('fee-sum') / Math.pow(10, 18) + " ETH"), " deployment fees and can take 3-5 minutes"), p({
-		style: 'font-size:20px'
-	}, 'New ', b('Loan Request'), ' will be then available in ’All Loan Requests’ window.', br(), br(), "Credit Tokens (CRE) are credited to the borrower on successful loan", br(), "repayment (loan amount of 1 ETH = 0.1 CRE). CRE represents the borrower’s credit rating. ", br(), br(), "0.1 CRE allows to borrow up to 0.1 ETH without a collateral (reputation based lending)."), div({
-		'class': 'new-loan-group'
-	}, div({
-		'class': 'new-loan-text'
-	}, 'New loan request:')), button({
-		'class': 'new-loan-request card-button bgc-primary blue'
-	}, 'Tokens'), button({
-		'class': 'new-domain-request card-button bgc-primary blue'
-	}, 'Domain'), button({
-		'class': 'new-rep-request card-button bgc-primary red'
-	}, 'Reputation')));
+
+Template.newLoanRequest.helpers({
+	messageClass: function () {
+		return state.get('message-class');
+  },
+	calculateFee: function () {
+		return state.get('fee-sum') / Math.pow(10, 18);
+  }
 });
+
 Template.newLoanRequest.events({
 	'click .new-loan-request': function(){
 		return web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).createNewLendingRequest({
