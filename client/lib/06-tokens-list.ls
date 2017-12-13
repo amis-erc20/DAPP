@@ -62,8 +62,40 @@
 
 @smart-contract-converter=-> 
 	for item in tokens-list!
-		if it == item.address => return item.name
+		if it?toLocaleLowerCase! == item.address?toLocaleLowerCase! => return item.name
 	return \–––
 
 
+@get-contract-id=-> 
+	for item in tokens-list! || []
+		if it?toLocaleLowerCase! == item.address?toLocaleLowerCase! => return item.id
 
+@get-contract-id=-> 
+	for item in tokens-list! || []
+		if it?toLocaleLowerCase! == item.address?toLocaleLowerCase! => return item.id
+
+@get-token-price=(address)->
+	id = get-contract-id address
+	prices = state.get \prices
+
+	for price in prices || []
+		if price.symbol == id => return +price.price_eth
+
+
+@is-capital-at-risk=->
+	if state.get(\lr)?currency == 0
+		wanted = +bigNumToStr(state.get('lr')?WantedWei)
+		price = get-token-price state.get(\lr)?TokenSmartcontractAddress
+		val = state.get(\lr)?TokenAmount
+
+	if state.get(\lr)?currency == 1
+		rate = +state.get('lr')?rate
+
+		wanted = (+lilNum-toStr(state.get('lr')?WantedWei))/(100*rate)
+		price = get-token-price state.get(\lr)?TokenSmartcontractAddress
+		val = state.get(\lr)?TokenAmount
+
+	console.log \wanted: wanted, \price*val: price*val, '(price * val)/wanted:' (price * val)/wanted
+
+	if (price * val)/wanted < 0.67 => return true
+	else return false
