@@ -279,7 +279,9 @@ Template.loan_request.rendered =->
 
     if (state.get(\lr)?currency == 1)      
         if global.was   
-            $('.lr-usdrate').attr \value, "$#{global.rate} (was $#{global.was} when LR was created)"
+            $('.lr-usdrate').attr \value, 
+                "$#{global.rate} " 
+                if global.was => "(was $#{global.was} when LR was created)"
         else 
             $('.lr-usdrate').attr \value, "$#{global.rate}"
 
