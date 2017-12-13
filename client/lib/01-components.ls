@@ -68,20 +68,21 @@ cycle=->
 			else Meteor.setTimeout (-> cycle!), 200
 
 		else if (state.get \update_usd)
-			console.log \isNeedToUpdateEthToUsdRate ans	
+			console.log \isNeedToUpdateEthToUsdRate ans
 			ticker.isNeedToUpdateEthToUsdRate (err,ans)->
-
+				state.set \update_usd true
 				if ans == false
 					alert 'Rate updated'
 					window.history.back! 
 				else
-					Meteor.setTimeout (-> cycle!), 200
+					Meteor.setTimeout (-> cycle!), 150000
 
 		else
 			if obj
 				alert 'Transaction mined'
 				window.history.back!
 			else Meteor.setTimeout (-> cycle!), 200
+
 
 
 

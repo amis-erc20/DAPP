@@ -46,16 +46,16 @@ input-box =~> #div class:\input-box,
         
             slider(\installment 'Installment count')     if state.get(\lr)?State == 0
             slider(\period 'Installment period (days)')  if state.get(\lr)?State == 0
+        
 
-            if !state.get(\lr)?isEns
-                if (state.get(\lr)?currency ==0)
-                    slider(\amount  'Amount (ETH)')   if state.get(\lr)?State == 0
+            if (state.get(\lr)?currency ==0) && (state.get(\lr)?State == 0) && (!state.get(\lr)?isEns)
+                slider(\amount  'Amount (ETH)')
 
-                if (state.get(\lr)?currency ==1)
-                    slider(\amount  'Amount (USD)')   if state.get(\lr)?State == 0
+            if (state.get(\lr)?currency ==1) && (state.get(\lr)?State == 0) && (!state.get(\lr)?isEns)
+                slider(\amount  'Amount (USD)')
 
-                slider(\premium 'Premium (% of amount)')  if state.get(\lr)?State == 0
-
+            if (!state.get(\lr)?isEns) && (state.get(\lr)?State == 0)
+                slider(\premium 'Premium (% of amount)')  
 
             text-and-button!
 

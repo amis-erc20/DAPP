@@ -14,15 +14,15 @@ template \newLoanRequest -> main_blaze do
 
         d \.center,
             div class:'row', 
-                d \.header 'Collateral Type'    
-                div class:'form-check',
-                    label class:'form-check-label',
-                        input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios1' value:\0 checked:''
-                        "Tokens"
-                div class:'form-check',
-                    label class:'form-check-label',
-                        input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios2' value:\1
-                        "Domain"
+                # d \.header 'Collateral Type'    
+                # div class:'form-check',
+                #     label class:'form-check-label',
+                #         input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios1' value:\0 checked:''
+                #         "Tokens"
+                # div class:'form-check',
+                #     label class:'form-check-label',
+                #         input class:'form-check-input' type:'radio' name:'contract-type' id:'gridRadios2' value:\1
+                #         "Domain"
             div class:'row', 
                 d \.header 'Currency'    
                 div class:'form-check',
@@ -41,7 +41,7 @@ Template.newLoanRequest.events do
 
     'click .new-loan-request':->
         params = {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
-        type = +$('input[name="contract-type"]:checked').val!
+        type = 0
         currency = +$('input[name="contract-currency"]:checked').val!
 
         web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).newLr type, currency, params, (err,res)->
