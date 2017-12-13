@@ -38,7 +38,7 @@ red-pin =-> img class:"hidden input-img-pin rpin" src:\/img/red_pin.svg   alt:''
 red-dot =-> img class:"#{state.get(it+\-rdot )} input-img-dot" src:\/img/red_dot.svg   alt:''     
 
 input-box =~> #div class:\input-box, 
-    if state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
+    if false => null#state.get(\isNeedToUpdateEthToUsdRate) ~= true && (state.get(\lr)?currency ==1)=> div class:\input-box, update-rate!
     else 
         div class:\input-box,
             if !state.get(\lr)?isEns =>  tokens-select!
@@ -73,6 +73,10 @@ update-rate=-> div class:'text-aligned update-rate-wrapper', D "loan-prebutton-t
 
 
 text-and-button=-> div class:\text-aligned,
+    if is-capital-at-risk! => div class:\text-s,
+        div class:"loan-prebutton-text" style:"color:rgb(220,50,50)", "The loan amount exceeds 67% of the collateral value. The capital is at high risk!"
+
+
     if state.get(\lr-State)==0 && state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Please, enter the data" 
         button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
@@ -81,7 +85,7 @@ text-and-button=-> div class:\text-aligned,
         button class:'card-button bgc-primary loan-button set-data' disabled:true, 'Set data'
 
     if state.get(\lr-State)==1 && state.get(\IamBorrower) => D \text-s,
-        D "loan-prebutton-text", "Please, transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) }  to this Loan Request address - #{state.get \address } and click on the button"
+        D "loan-prebutton-text", "Please, transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) }  to this Loan Request address - #{state.get \address }"
         # button class:'card-button bgc-primary loan-button transfer-tokens', "Check that #{ ensQ('tokens are', 'domain is') } transferred"
     if state.get(\lr-State)==1 && !state.get(\IamBorrower) => D \text-s,
         D "loan-prebutton-text", "Borrower should transfer #{ ensQ((state.get('lr').TokenAmount + ' tokens'), \domain) } to this Loan Request address - #{state.get \address }"
