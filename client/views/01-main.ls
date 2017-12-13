@@ -14,9 +14,8 @@ template \mainTemplate -> main_blaze {},
 @quartet=-> state.get \quartet
 
 @card-class=->
-    if it?isEns => return \ens
-    if it?isRep => return \rep
-    if !it.isEns && !it.isRep => return \tokens
+    if it?isEns  => return \rep
+    if !it.isEns => return \tokens
 
 @card-template =-> 
     console.log \card-template-for: it
