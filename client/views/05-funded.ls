@@ -19,6 +19,7 @@ create-quartet=(start,cb)->
     load-one-card =-> ledger.getLrFunded start - it, (err,id)->
         if (id == big-zero)||(id?length != 42) => out[it] = null
         else get-all-lr-data(id) (err,lr)~>
+            lr.TokenAmount =  (lr.TokenAmount / 10^get-contract-decimals(state.get(\token-address)||lr?TokenSmartcontractAddress||0))||0
             lr.id = id
             out[it] = lr
 

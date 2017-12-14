@@ -83,6 +83,7 @@ template \mainTemplate -> main_blaze {},
 
         else get-all-lr-data(id) (err,lrloc)~>
             lrloc.id = id
+            lrloc.TokenAmount =  (lrloc.TokenAmount / 10^get-contract-decimals(state.get(\token-address)||lrloc?TokenSmartcontractAddress||0))||0
             out[num] = lrloc
             console.log \lrloc: out[num]
 

@@ -179,7 +179,7 @@ Template.loan_request.created=->
         state.set \loan-wrapper-class, ''
         state.set \loading-class, \hidden
         &1.isToken = (!&1?isEns)&&(!&1?isRep)
-
+        &1.TokenAmount =  (&1.TokenAmount / 10^get-contract-decimals(state.get(\token-address)||&1?TokenSmartcontractAddress||0))||0
         state.set \lr, &1
 
         state.set \lr-Lender   &1?Lender
@@ -295,7 +295,7 @@ Template.loan_request.rendered =->
 
 
     # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
-    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount / 10^get-contract-decimals(state.get(\lr)?TokenSmartcontractAddress)
+    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount 
 
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
@@ -420,6 +420,7 @@ Template.loan_request.events do
         state.set \token-address addr
 
         b-text = smart-contract-converter addr
+        $(\.lr-TokenSmartcontractAddress).attr \value addr
         $(\.show-tokens).text b-text
 
 
@@ -442,7 +443,7 @@ Template.loan_request.events do
             step = (mx - mn) / 100
             val = (mx - mn) / 2
 
-        console.log 
+        # console.log 
         init-amount-slider mn, mx, step, val
         
 
@@ -531,7 +532,7 @@ Template.loan_request.events do
         web3.eth.contract(config.TICKER-ABI).at(config.ETH_TICKER_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
 
 
-Everything_is_ok=->
+@Everything_is_ok=->
     ok = true
     test =-> if it is false => ok := false
 
@@ -545,8 +546,11 @@ Everything_is_ok=->
         if cls==\lr-ensDomain   && state.get(\lr)?isEns == true  => test ShaQ $(el).val!
         if cls==\lr-PremiumWei  => test IntQ $(el).val!
         if cls==\lr-TokenSmartcontractAddress && state.get(\lr)?isEns == false => test EthQ $(el).val!
-        console.log cls, \ok:, ok
+        console.log cls, \ok:, ok 
     ok
+
+
+
 
 check-set-data-out =(out,cb)->  # TODO: check set-data 
     cb(null, out)
@@ -614,7 +618,7 @@ input-unit =-> section style:'height:27px',
 
 tokens-select=-> section style:'height:27px',
     h3 class:\input-key, 'Token name'
-    button class:'show-tokens', 'Select'
+    button class:'show-tokens input lr-TokenSmartcontractAddress' value:null, 'Select'
         
         
 @ensQ =-> 
