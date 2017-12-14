@@ -359,6 +359,8 @@ Template.loan_request.events do
             
             out.tokamount = tokens.mul(dec.pow(ex))
 
+        else out.tokamount = 0
+
 
         out.tokname   = smart-contract-converter(state.get \token-address) || ''
         out.smart     = state.get(\token-address)|| 0
@@ -366,7 +368,17 @@ Template.loan_request.events do
 
         out.ensDomainHash = $(\.lr-ensDomain).val! || 0
 
-        console.log \out: out
+
+
+        console.log \out.ethamount, out.ethamount,
+        console.log \out.tokamount,                     out.tokamount,                    
+        console.log \out.premium,              out.premium,             
+        console.log \out.tokname,             out.tokname,            
+        console.log \out.link, out.link,
+        console.log \out.smart, out.smart,
+        console.log \out.installments_count, out.installments_count,
+        console.log \out.installments_period, out.installments_period,
+        console.log \out.ensDomainHash,         out.ensDomainHash,        
 
         lr.setData(state.get \address )(
             out.ethamount,
