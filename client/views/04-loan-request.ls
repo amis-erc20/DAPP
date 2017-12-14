@@ -370,15 +370,15 @@ Template.loan_request.events do
 
 
 
-        console.log \out.ethamount, out.ethamount,
-        console.log \out.tokamount,                     out.tokamount,                    
-        console.log \out.premium,              out.premium,             
-        console.log \out.tokname,             out.tokname,            
-        console.log \out.link, out.link,
-        console.log \out.smart, out.smart,
-        console.log \out.installments_count, out.installments_count,
-        console.log \out.installments_period, out.installments_period,
-        console.log \out.ensDomainHash,         out.ensDomainHash,        
+        console.log \out.ethamount, out.ethamount
+        console.log \out.tokamount, out.tokamount
+        console.log \out.premium, out.premium
+        console.log \out.tokname, out.tokname
+        console.log \out.link, out.link
+        console.log \out.smart, out.smart
+        console.log \out.installments_count, out.installments_count
+        console.log \out.installments_period, out.installments_period
+        console.log \out.ensDomainHash, out.ensDomainHash
 
         lr.setData(state.get \address )(
             out.ethamount,
