@@ -20,3 +20,4 @@ practicalmeteor:mocha
 mongo                        # The database Meteor supports right now
 minimongo
 peerlibrary:assert
+kevohagan:sweetalert
