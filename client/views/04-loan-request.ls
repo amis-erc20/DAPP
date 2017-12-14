@@ -357,7 +357,7 @@ Template.loan_request.events do
             dec = new BigNumber(10)
             ex = get-contract-decimals state.get(\token-address)
             
-            out.tokamount = tokens.mul(dec.pow(ex))
+            out.tokamount = lilNum-toStr  tokens.mul(dec.pow(ex))
 
         else out.tokamount = 0
 
