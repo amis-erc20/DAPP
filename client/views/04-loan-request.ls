@@ -109,7 +109,7 @@ text-and-button=-> div class:\text-aligned,
             "This includes #{ (premium-amount!/state.get(\lr).installments_count)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
             # br!
             # "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
-        button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
+        button class:'card-button bgc-primary loan-button return-tokens', 'Pay an inшstallment'
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
         button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Pay an installment'
@@ -179,7 +179,9 @@ Template.loan_request.created=->
         state.set \loan-wrapper-class, ''
         state.set \loading-class, \hidden
         &1.isToken = (!&1?isEns)&&(!&1?isRep)
+
         state.set \lr, &1
+
         state.set \lr-Lender   &1?Lender
         state.set \lr-Borrower &1?Borrower
         state.set \lr-State    &1?State
@@ -293,7 +295,7 @@ Template.loan_request.rendered =->
 
 
     # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
-    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount
+    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount / 10^get-contract-decimals(state.get(\lr)?TokenSmartcontractAddress)
 
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
