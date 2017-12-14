@@ -447,6 +447,8 @@ Template.loan_request.events do
         init-amount-slider mn, mx, step, val
         
 
+        if Everything_is_ok! => $(\.set-data).remove-attr \disabled
+        else $(\.set-data).attr \disabled, \disabled
 
 
 
