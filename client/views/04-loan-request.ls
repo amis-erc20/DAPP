@@ -109,7 +109,7 @@ text-and-button=-> div class:\text-aligned,
             "This includes #{ (premium-amount!/state.get(\lr).installments_count)} #{if state.get(\lr)?currency~=0 => \Eth else \Usd } premium amount"
             # br!
             # "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
-        button class:'card-button bgc-primary loan-button return-tokens', 'Pay an inшstallment'
+        button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
         button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Pay an installment'
