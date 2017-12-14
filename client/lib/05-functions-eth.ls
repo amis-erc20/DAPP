@@ -43,7 +43,7 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 
 	lr.getCurrentState(address) -> 			out.State = +lilNum-toStr &1
 	lr.getLender(address) -> 				out.Lender = &1
-	lr.getTokenAmount(address) -> 			out.TokenAmount = +lilNum-toStr &1
+	lr.getTokenAmount(address) -> 			out.TokenAmount = new BigNumber &1
 	lr.isEns(address) ->					out.isEns = &1
 	lr.isRep(address) ->					out.isRep = &1
 	lr.getEnsDomainHash(address) ->			out.EnsDomainHash = &1
@@ -68,8 +68,16 @@ map init(ticker), ["lastTimeRateUpdated", "isNeedToUpdateEthToUsdRate", "oracliz
 		if new-cycle => Meteor.setTimeout (->cycle!), 50
 		
 		else 
-			console.log \out: out
+			dec = new BigNumber(10)
+			ex = get-contract-decimals out.TokenSmartcontractAddress
+			out.TokenAmount = +lilNum-toStr out.TokenAmount.div(dec.pow(ex))
+
+			console.log \contract-data-ready: out
+
 			cb null, out
+
+
+
 
 	cycle!
 

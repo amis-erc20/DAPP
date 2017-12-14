@@ -350,7 +350,14 @@ Template.loan_request.events do
         out.bor       = $(\.lr-Borrower).val!
         out.len       = $(\.lr-Lender).val!
 
-        out.tokamount = +$(\.lr-TokenAmount).val!   || 0
+        if !state.get(\lr).isEns
+            tokens = new BigNumber(+$(\.lr-TokenAmount).val! || 0)
+            dec = new BigNumber(10)
+            ex = get-contract-decimals state.get(\token-address)
+            
+            out.tokamount = tokens.mul(dec.pow(ex))
+
+
         out.tokname   = smart-contract-converter(state.get \token-address) || ''
         out.smart     = state.get(\token-address)|| 0
         out.link      = $(\.lr-TokenInfoLink).val! || ''

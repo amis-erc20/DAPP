@@ -43,13 +43,25 @@ T \success -> main_blaze do
 			br!
 			if state.get(\thash) => "Transaction hash: #{state.get(\thash)}"
 			br!		
+			d \.hidden, global.again = false
 			cycle!
 
 		button class:'btn btn-primary btn-lg' onclick:'window.history.back()', 'Go back'
 
 
 cycle=->
-	web3.eth.getTransactionReceipt state.get(\thash), (err, obj)~>
+	if (state.get \update_usd)
+		ticker.isNeedToUpdateEthToUsdRate (err,ans)->
+			console.log \isNeedToUpdateEthToUsdRate ans
+			if ans == false
+				if global.again == false
+					global.again := true
+					alert 'Rate updated'
+					window.history.back! 
+			else
+				Meteor.setTimeout (-> cycle!), 1000
+
+	else web3.eth.getTransactionReceipt state.get(\thash), (err, obj)~>
 		console.log \getTransactionReceipt: obj
 
 		if (state.get \new_contract) 
@@ -62,26 +74,16 @@ cycle=->
 							console.log \num: num, \addr: addr
 							if (addr != big-zero) && (addr != \0x)
 								Router.go "/loan-request/#addr"
-							else Meteor.setTimeout (-> cycle!), 200
+							else Meteor.setTimeout (-> cycle!), 1000
 
-					else Meteor.setTimeout (-> cycle!), 200
-			else Meteor.setTimeout (-> cycle!), 200
-
-		else if (state.get \update_usd)
-			console.log \isNeedToUpdateEthToUsdRate ans
-			ticker.isNeedToUpdateEthToUsdRate (err,ans)->
-				state.set \update_usd true
-				if ans == false
-					alert 'Rate updated'
-					window.history.back! 
-				else
-					Meteor.setTimeout (-> cycle!), 150000
+					else Meteor.setTimeout (-> cycle!), 1000
+			else Meteor.setTimeout (-> cycle!), 1000
 
 		else
 			if obj
 				alert 'Transaction mined'
 				window.history.back!
-			else Meteor.setTimeout (-> cycle!), 200
+			else Meteor.setTimeout (-> cycle!), 1000
 
 
 
