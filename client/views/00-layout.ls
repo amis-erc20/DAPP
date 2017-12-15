@@ -10,6 +10,8 @@ template \layout ->
                 nav class:\navigation,
                     D "nav-link-wrapper",
                         a class:"nav-link js-gitter-toggle-chat-button", "Chat"
+                    D "nav-link-wrapper",
+                        a class:"nav-link" href:"https://github.com/ETHLend/DAPP/wiki", "Help"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\main => \selected  }",
                         a class:\nav-link href:\/main/1, "All Loan Requests"
                     D "nav-link-wrapper #{if state.get(\selected-class)==\funded => \selected  }",
