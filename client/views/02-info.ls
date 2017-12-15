@@ -27,10 +27,7 @@ template \info -> main_blaze {},
         # p class:\info-value,
         #     a target:\_blank href:"https://etherscan.io/address/#{config.REP_ADDRESS}", config.REP_ADDRESS
   
-        h4 class:\info-key, "First EthLend ver."
-        p class:'info-value', a target:\_blank href:'http://oldest.ethlend.io', 'oldest.ethlend.io'
-        
-        h4 class:\info-key, "Second EthLend ver."
+        h4 class:\info-key, "Old EthLend version"
         p class:'info-value', a target:\_blank href:'http://old.ethlend.io', 'old.ethlend.io'
 
 
