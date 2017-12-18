@@ -4,7 +4,7 @@ template \newLoanRequest -> main_blaze do
     loading-component!
     div class:"message #{state.get \message-class }",
         p style:\font-size:20px,
-            "This includes " b "#{state.get(\fee-sum)/10^18} ETH"; " deployment fees and can take 3-5 minutes"
+            "This includes " b "#{+state.get('fee-sum')/10^18} ETH"; " deployment fees and can take 3-5 minutes"
 
         p style:\font-size:20px,
             'New ' 
@@ -43,16 +43,18 @@ Template.newLoanRequest.events do
         params = {from:web3.eth.defaultAccount, gasPrice:15000000000, value:config.BALANCE_FEE_AMOUNT_IN_WEI}
         type = 0
         currency = +$('input[name="contract-currency"]:checked').val!
-
-        web3.eth.contract(config.LEDGERABI).at(config.ETH_MAIN_ADDRESS).newLr type, currency, params, (err,res)->
-            if err => console.log \err: err
-            if res 
-                console.log \thash: res
-                state.set \thash res
-                state.set \new_contract true
-                state.set \transact-to-address config.ETH_MAIN_ADDRESS
-                state.set \transact-value      state.get(\fee-sum)
-                Router.go \success   
+        ledger.getLrCount (err, BN)->               
+            num = +lilNum-toStr(BN) 
+            state.set \new_contract num
+            web3.eth.contract(config.LEDGERABI).at(state.get(\ETH_MAIN_ADDRESS)).newLr type, currency, params, (err,res)->
+                if err => console.log \err: err
+                if res 
+                    console.log \thash: res
+                    state.set \thash res
+                    
+                    state.set \transact-to-address state.get(\ETH_MAIN_ADDRESS)
+                    state.set \transact-value      state.get(\fee-sum)
+                    Router.go \success   
 
 
 Template.newLoanRequest.created =->
@@ -62,7 +64,7 @@ Template.newLoanRequest.created =->
         
 Template.newLoanRequest.rendered =~>
 
-    web3?eth.contract(config.LEDGER-ABI).at(config.ETH_MAIN_ADDRESS).getFeeSum (err, res)~>
+    web3?eth.contract(config.LEDGER-ABI).at(state.get(\ETH_MAIN_ADDRESS)).getFeeSum (err, res)~>
         if err => return err 
         fee-sum = lilNum-toStr res
         state.set \fee-sum fee-sum

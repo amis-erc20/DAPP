@@ -74,17 +74,12 @@ cycle=->
 
 		if (state.get \new_contract) 
 			if obj	
-				ledger.getLrCount (err, BN)->				
-					num = +lilNum-toStr(BN) 
-					console.log \num: num
-					if num
-						ledger.getLr (num - 1), (err, addr)->
-							console.log \num: num, \addr: addr
-							if (addr != big-zero) && (addr != \0x)
-								Router.go "/loan-request/#addr"
-							else Meteor.setTimeout (-> cycle!), 1000
-
+				ledger.getLr ((state.get \new_contract)), (err, addr)->
+					console.log \num: state.get(\new_contract), \addr: addr
+					if (addr != big-zero) && (addr != \0x)
+						Router.go "/loan-request/#addr"
 					else Meteor.setTimeout (-> cycle!), 1000
+
 			else Meteor.setTimeout (-> cycle!), 1000
 
 		else
