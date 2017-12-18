@@ -111,7 +111,12 @@ text-and-button=-> div class:\text-aligned,
             # "Borrower is rewarded with #{(+wanted-amount!/(global.rate*10)).to-fixed 0 } Credit Tokens (CRE) after the repayment."
         button class:'card-button bgc-primary loan-button return-tokens', 'Pay an installment'
     if state.get(\lr-State)==4 && !state.get(\IamBorrower) && !state.get(\IamLender) => D \text-s,
-        D "loan-prebutton-text", "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
+        D "loan-prebutton-text", 
+            if ((state.get(\lr)?installments_count) - (state.get(\lr)?installments_paid) <= 1)
+                "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
+            else
+                "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } ETH in order to repay the instalment. When all instalments are paid, the tokens are sent back to the borrower’s address."
+
         button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Pay an installment'
     if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
         D "loan-prebutton-text", "If time has passed but borrower hasn't returned the loan - you can #{ensQ('get his tokens' 'get his domain' 'burn his credit' )}"
@@ -398,7 +403,6 @@ Template.loan_request.events do
         console.log \NeededSumByLender: state.get(\NeededSumByLender)
 
         transact = {
-            gasPrice: 200000000000
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\lr)?neededSumByLender
@@ -414,7 +418,7 @@ Template.loan_request.events do
             lr.checkTokens(state.get(\address)) goto-success-cb
         if state.get(\lr)?isEns
             # lr.checkDomain(state.get(\address)) goto-success-cb
-            web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount,  gasPrice:20000000000}, goto-success-cb)
+            web3.eth.contract(config.LRABI).at(state.get(\address)).checkDomain({from:web3.eth.defaultAccount}, goto-success-cb)
 
     'click .token-item-view':(event, target)-> 
         if $(event.target).has-class \site-link
@@ -474,7 +478,6 @@ Template.loan_request.events do
             from:  web3.eth.defaultAccount
             to:    state.get(\address)
             value: lilNum-toStr state.get(\lr)?neededSumByBorrower
-            #             gasPrice:150000000000
         }
         console.log \transact: transact
         
@@ -543,7 +546,7 @@ Template.loan_request.events do
 
     'click .update-rate':->
         state.set \update_usd true
-        web3.eth.contract(config.TICKER-ABI).at(config.ETH_TICKER_ADDRESS).updateEthToUsdRate {from:web3.eth.defaultAccount, gasPrice:15000000000, value:50000000000000000}, goto-success-cb
+        web3.eth.contract(config.TICKER-ABI).at(state.get(\ETH_TICKER_ADDRESS)).updateEthToUsdRate {from:web3.eth.defaultAccount,  value:50000000000000000}, goto-success-cb
 
 
 @Everything_is_ok=->
