@@ -23,26 +23,13 @@ template \layout ->
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
-            if !web3? =>
-              link = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'
-              swal {
-                title: 'Metamask is not installed'
-                text: 'This site requires Metamask to use it\'s full functionality. Download the plugin for Google Chrome.'
-                icon: 'warning'
-                showCancelButton: true
-                close: false
-                buttons: [cancel: "Continue without it", download: "Get it here"]
-                dangerMode: true
-              }, (download) ->
-                if download then window.location.href = link;
-           
+            if !web3? 
+              SI @lookupTemplate \no_metamask
+        
             else 
               if state.get \ETH_MAIN_ADDRESS
                 if state.get(\ETH_MAIN_ADDRESS) == \err
-                  swal do
-                    title: 'Wrong network'
-                    text: 'You are connected to the wrong network. Please switch to main/rinkeby network to make loans.'
-                    icon: 'info'
+                  SI @lookupTemplate \wrong_network
 
                 else SI @lookupTemplate \yield
 

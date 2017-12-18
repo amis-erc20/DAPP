@@ -14,7 +14,7 @@ template \info -> main_blaze {},
 
         h4 class:\info-key, "Ledger contract address"
         p class:\info-value,
-            a target:\_blank href:config.ETH_MAIN_ADDRESS_LINK, config.ETH_MAIN_ADDRESS
+            a target:\_blank href:state.get(\ETH_MAIN_ADDRESS_LINK), state.get(\ETH_MAIN_ADDRESS)
 
         h4 class:\info-key, "ENS registry address"
         p class:\info-value,

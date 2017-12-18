@@ -195,7 +195,7 @@ Template.loan_request.created=->
             console.log \need: need
             state.set \isNeedToUpdateEthToUsdRate need
 
-            HTTP.call \GET \https://api.coinmarketcap.com/v1/ticker/?convert=ETH (err,res)->
+            HTTP.call \GET \https://api.coinmarketcap.com/v1/ticker/?convert=ETH&limit=1000 (err,res)->
                 state.set \prices JSON.parse res.content
 
         

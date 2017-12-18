@@ -6,6 +6,14 @@ Router.route \noMetamask, path: \/no_metamask
 		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'This site requires the Metamask plugin for Google Chrome.'
 		a class:'btn btn-primary btn-lg' href:'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn', 'Download Metamask'
 
+template \wrong_network -> main_blaze wrong_network!
+Router.route \wrong_network, path: \/wrong_network
+
+@wrong_network=-> div style:'padding:100px' class:\container ,
+		h1 style:'font-size:50px; display:block', 'Wrong network'
+		p style:'font-size:20px; padding-top:15px;padding-bottom:15px', 'You are connected to the wrong network. Please switch to main/rinkeby network to make loans.'
+		# a class:'btn btn-primary btn-lg' href:'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn', 'Download Metamask'
+
 @error-component =-> 
 	h1 class:"#{state.get \error-class }", 'Wrong address'
 
