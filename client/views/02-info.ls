@@ -2,8 +2,7 @@ Router.route \info, path: \info
 
 template \info -> main_blaze {}, 
     D \info,
-        h4 class:\info-key, "Eth is enabled"
-        p class:\info-value, yesno config.SMART_CONTRACTS_ENABLED
+        h3 class:\info-caption, "Pleaes use Mainnet or Rinkeby testnet"
 
         h4 class:\info-key, "Your address"
         p class:'info-value defaultAccount', 
