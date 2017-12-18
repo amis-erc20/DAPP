@@ -83,8 +83,12 @@ template \mainTemplate -> main_blaze {},
 
         else get-all-lr-data(id) (err,lrloc)~>
             lrloc.id = id
-            lrloc.TokenAmount =  (lrloc.TokenAmount / 10^get-contract-decimals(state.get(\token-address)||lrloc?TokenSmartcontractAddress||0))||0
             out[num] = lrloc
+
+            TA  = new BigNumber lrloc.TokenAmount
+            dec = new BigNumber (10^get-contract-decimals(lrloc.TokenSmartcontractAddress))||0
+            &1.TokenAmount = +lilNum-toStr TA.dividedBy dec
+
             console.log \lrloc: out[num]
 
 
@@ -101,6 +105,7 @@ template \mainTemplate -> main_blaze {},
         if new-cycle => return Meteor.setTimeout (-> cycle! ), 10
         else 
             console.log \DONE!
+
             state.set \quartet compact out
             return cb null, compact out
     cycle!        

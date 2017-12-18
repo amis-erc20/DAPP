@@ -39,26 +39,26 @@
 	
 	* decimals:18 id:\CFI  address:\0x12fef5e57bf45873cd9b62e9dbd7bfb99e32d73e name:'Cofound.it (CFI)' link:'https://cofound.it/' description:'Cofound.it is a platform that connects you to teams that have trained to become serious blockchain businesses' 
 	* decimals:6  id:\TRST address:\0xcb94be6f13a1182e4a4b6140cb7bf2025d28e41b name:'Trustcoin - WeTrust' link:'https://www.wetrust.io/' description:'A platform for Trusted Lending Circles, powered by people and blockchain' 
-	* decimals:18 id:\ST   address:\0xaf30d2a7e90d7dc361c8c4585e9bb7d2f6f15bc7 name:'FirstBlood' link:'https://firstblood.io/' description:'FirstBlood.io (“FirstBlood”) is a decentralized Esports gaming platform that is powered by the blockchain' 
+	* decimals:18 id:\firstblood address:\0xaf30d2a7e90d7dc361c8c4585e9bb7d2f6f15bc7 name:'FirstBlood' link:'https://firstblood.io/' description:'FirstBlood.io (“FirstBlood”) is a decentralized Esports gaming platform that is powered by the blockchain' 
 	* decimals:6  id:\TAAS address:\0xe7775a6e9bcf904eb39da2b68c5efb4f9360e08c name:'Taas Fund' link:'https://taas.fund/' description:'TaaS is a tokenized closed-end fund designed to reduce the risks and technical barriers of investing in the blockchain space.' 
 	* decimals:18 id:\DNT  address:\0x0abdace70d3790235af448c88547603b945604ea name:'district0x' link:'https://district0x.io/' description:'A network of decentralized markets and communities. Create, operate, and govern. Powered by Ethereum, Aragon, and IPFS.' 
 	
-	* decimals:18 id:\NMR address:\0x1776e1f26f98b1a5df9cd347953a26dd3cb46671 name:'Numeraire' link:'https://numer.ai/' description:'The stock market is inefficient with respect to new developments in machine learning — only a fraction of the world\'s data scientists have access to its data. Numerai is changing this.' 
-	* decimals:8  id:\Xaurum address:\0x4DF812F6064def1e5e029f1ca858777CC98D2D81 name:'Xaurum' link:'https://www.xaurum.org/' description:'Xaurum is unit of value on the golden blockchain, it represents an increasing amount of gold and can be exchanged for it by melting' 
+	* decimals:18 id:\NMR  address:\0x1776e1f26f98b1a5df9cd347953a26dd3cb46671 name:'Numeraire' link:'https://numer.ai/' description:'The stock market is inefficient with respect to new developments in machine learning — only a fraction of the world\'s data scientists have access to its data. Numerai is changing this.' 
+	* decimals:8  id:\XAUR address:\0x4DF812F6064def1e5e029f1ca858777CC98D2D81 name:'Xaurum' link:'https://www.xaurum.org/' description:'Xaurum is unit of value on the golden blockchain, it represents an increasing amount of gold and can be exchanged for it by melting' 
 	* decimals:8  id:\HMQ  address:\0xcbcc0f036ed4788f63fc0fee32873d6a7487b908 name:'Humaniq' link:'https://humaniq.co/' description:'Humaniq aims to be a simple and secure 4th generation mobile bank.' 
 	* decimals:8  id:\TKN  address:\0xaaaf91d9b90df800df4f55c205fd6989c977e73a name:'Tokencard - Monolith' link:'https://tokencard.io/#token' description:'The All Powerful Smart Contract Powered Debit Card' 
-	* decimals:3  id:\Guppy address:\0xf7b098298f7c69fc14610bf71d5e02c60792894c name:'Guppy - Matchpool' link:'https://matchpool.co/' description:'Matchpool is a platform that creates human connections' 
+	* decimals:3  id:\GUP  address:\0xf7b098298f7c69fc14610bf71d5e02c60792894c name:'Matchpool' link:'https://matchpool.co/' description:'Matchpool is a platform that creates human connections' 
 	
 	* decimals:8  id:\TIME address:\0x6531f133e6deebe7f2dce5a0441aa7ef330b4e53 name:'TIME - ChronoBank' link:'https://chronobank.io/' description:'ChronoBank.io is a wide-ranging blockchain project, aimed at disrupting the HR/recruitment/finance industries' 
 	* decimals:9  id:\ADT  address:\0xd0d6d6c5fe4a677d343cc433536bb717bae167dd name:'AdToken' link:'https://adtoken.com/' description:'adChain is a browser agnostic Ethereum based solution for digital advertising that seamlessly integrates with pre-existing RTB and programmatic industry standards.' 
 	* decimals:18 id:\SWT  address:\0xb9e7f8568e08d5659f5d29c4997173d84cdf2607 name:'SWT - Swarm City' link:'https://swarm.city/' description:'Swarm City is a decentralized peer to peer sharing economy' 
-	* decimals:16 id:\ROL  address:\0x2e071D2966Aa7D8dECB1005885bA1977D6038A65 name:'Etheroll' link:'http://etheroll.com/' description:'Provably fair online Ether gaming on the Ethereum Blockchain' 
+	* decimals:16 id:\DICE address:\0x2e071D2966Aa7D8dECB1005885bA1977D6038A65 name:'Etheroll' link:'http://etheroll.com/' description:'Provably fair online Ether gaming on the Ethereum Blockchain' 
 	* decimals:18 id:\NET  address:\0xcfb98637bcae43C13323EAa1731cED2B716962fD name:'NimiqNetwork' link:'https://nimiq.com/' description:'World\'s first Browser-based Blockchain & Ecosystem' 
 	
 	* decimals:18 id:\LUN  address:\0xfa05A73FfE78ef8f1a739473e462c54bae6567D9 name:'Lunyr' link:'https://lunyr.com/' description:'Lunyr is an Ethereum-based decentralized world knowledge base which rewards users with app tokens for peer-reviewing and contributing information' 
 	* decimals:0  id:\BCAP address:\0xff3519eeeea3e76f1f699ccce5e23ee0bdda41ac name:'Bcap - Blockchain Capital' link:'http://blockchain.capital/' description:'Blockchain Capital is a pioneer and the premier venture capital firm investing in Blockchain enabled technology	' 
 	* decimals:18 id:\PLU  address:\0xD8912C10681D8B21Fd3742244f44658dBA12264E name:'Pluton - Plutus.it' link:'https://plutus.it/' description:'With Plutus Tap & Pay, you can pay at any NFC-enabled merchant' 
-	* decimals:0  id:\vSlice address:\0x5c543e7AE0A1104f78406C340E9C64FD9fCE5170 name:'vSlice'  link:'http://www.vslice.io/' description:'An Ethereum Gaming Platform Token' 
+	* decimals:0  id:\VSL address:\0x5c543e7AE0A1104f78406C340E9C64FD9fCE5170 name:'vSlice'  link:'http://www.vslice.io/' description:'An Ethereum Gaming Platform Token' 
 
 @smart-contract-converter=-> 
 	for item in tokens-list!

@@ -184,7 +184,9 @@ Template.loan_request.created=->
         state.set \loan-wrapper-class, ''
         state.set \loading-class, \hidden
         &1.isToken = (!&1?isEns)&&(!&1?isRep)
-        &1.TokenAmount =  (&1.TokenAmount / 10^get-contract-decimals(state.get(\token-address)||&1?TokenSmartcontractAddress||0))||0
+        TA  = new BigNumber &1.TokenAmount
+        dec = new BigNumber 10^get-contract-decimals(state.get(\token-address)||&1?TokenSmartcontractAddress||0)
+        &1.TokenAmount = +lilNum-toStr TA.dividedBy dec
         state.set \lr, &1
 
         state.set \lr-Lender   &1?Lender
@@ -300,7 +302,7 @@ Template.loan_request.rendered =->
 
 
     # if state.get(\lr)?DaysToLen                 != 0 =>        $('.lr-DaysToLen').attr \value,                  state.get(\lr)?DaysToLen
-    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount 
+    if state.get(\lr)?TokenAmount               != 0 =>        $('.lr-TokenAmount').attr \value,                state.get(\lr)?TokenAmount||0
 
     if state.get(\lr)?Borrower                  != big-zero => $('.lr-Borrower').attr \value,                   state.get(\lr)?Borrower
     if state.get(\lr)?Lender                    != big-zero => $('.lr-Lender').attr \value,                     state.get(\lr)?Lender
