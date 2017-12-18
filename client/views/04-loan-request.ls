@@ -195,7 +195,7 @@ Template.loan_request.created=->
             console.log \need: need
             state.set \isNeedToUpdateEthToUsdRate need
 
-            HTTP.call \GET \https://api.coinmarketcap.com/v1/ticker/?convert=ETH&limit=1000 (err,res)->
+            HTTP.call \GET \https://api.coinmarketcap.com/v1/ticker/?convert=ETH&limit=10000 (err,res)->
                 state.set \prices JSON.parse res.content
 
         
@@ -208,18 +208,18 @@ Template.loan_request.created=->
     $ \.amount-slider .slider do 
         disabled: !state.get(\IamBorrower)
         create:(event,ui)-> 
-            $(\#custom-handle-amount).text take 6 (val || 0).to-fixed 3 #$(this).slider \value
+            $(\#custom-handle-amount).text take 9 (val || 0).to-fixed 6 #$(this).slider \value
             $(this).attr \value val ||0
         
         slide:(event,ui)-> 
-            $(\#custom-handle-amount).text(take 6 (ui.value ||0).to-fixed 3)
+            $(\#custom-handle-amount).text(take 9 (ui.value ||0).to-fixed 6)
             $(this).attr \value $(\#custom-handle-amount).text!
         range: \min
         min: mn
         max: mx
         step: step
         value: val
-    $(\#custom-handle-amount).text take 6 (val || 0).to-fixed 3
+    $(\#custom-handle-amount).text take 9 (val || 0).to-fixed 6
 
 
 Template.loan_request.rendered =->
