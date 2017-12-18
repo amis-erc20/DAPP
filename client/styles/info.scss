@@ -7,6 +7,14 @@
     border-radius: 11px;
     background-color: $secondary-color;
     margin: 122px auto;
+    &-caption{
+        margin: 8px 7px 8px 22px;
+        display: inline-block;
+        width: 500px;
+        &:first-child {
+            margin-top: 26px;
+        }
+    }
     &-key {
         margin: 8px 7px 8px 22px;
         font-size: 14px;
