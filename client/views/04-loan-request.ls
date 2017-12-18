@@ -184,7 +184,9 @@ Template.loan_request.created=->
         state.set \loan-wrapper-class, ''
         state.set \loading-class, \hidden
         &1.isToken = (!&1?isEns)&&(!&1?isRep)
-        &1.TokenAmount =  (&1.TokenAmount / 10^get-contract-decimals(state.get(\token-address)||&1?TokenSmartcontractAddress||0))||0
+        TA  = new BigNumber &1.TokenAmount
+        dec = new BigNumber 10^get-contract-decimals(state.get(\token-address)||&1?TokenSmartcontractAddress||0)
+        &1.TokenAmount = +lilNum-toStr TA.dividedBy dec
         state.set \lr, &1
 
         state.set \lr-Lender   &1?Lender
