@@ -3,7 +3,6 @@ Router.route \info, path: \info
 template \info -> main_blaze {}, 
     D \info,
         h3 class:\info-caption, "Please use Mainnet or Rinkeby testnet"
-        p class:'info-value', ''
 
         h4 class:\info-key, "Your address"
         p class:'info-value defaultAccount', 
