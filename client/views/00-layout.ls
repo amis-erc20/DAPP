@@ -23,8 +23,28 @@ template \layout ->
                         a class:\nav-link href:\/info, "Info"
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
-                
-                SI @lookupTemplate \yield
+            if !web3? =>
+              link = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'
+              swal {
+                title: 'Metamask is not installed'
+                text: 'This site requires Metamask to use it\'s full functionality. Download the plugin for Google Chrome.'
+                icon: 'warning'
+                showCancelButton: true
+                close: false
+                buttons: [cancel: "Continue without it", download: "Get it here"]
+                dangerMode: true
+              }, (download) ->
+                if download then window.location.href = link;
+           
+            else 
+              if state.get \ETH_MAIN_ADDRESS
+                if state.get(\ETH_MAIN_ADDRESS) == \err
+                  swal do
+                    title: 'Wrong network'
+                    text: 'You are connected to the wrong network. Please switch to main/rinkeby network to make loans.'
+                    icon: 'info'
+
+                else SI @lookupTemplate \yield
 
 
         footer do
@@ -114,51 +134,10 @@ checkAccountBalance = ->
     return )
   return
 
-# check-web=(eld, nom)~>
+Template.layout.created=->
 
 Template.layout.rendered=->
     #Notify if MetaMask is not installed
-    if !web3? =>
-                   link = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'
-                   swal {
-                     title: 'Metamask is not installed'
-                     text: 'This site requires Metamask to use it\'s full functionality. Download the plugin for Google Chrome.'
-                     icon: 'warning'
-                     showCancelButton: true
-                     close: false
-                     buttons: [cancel: "Continue without it", download: "Get it here"]
-                     dangerMode: true
-                   }, (download) ->
-                     if download then window.location.href = link;
-                     return
-
-    if web3 and web3.eth => web3.version.getNetwork ((err, netId) ->
-                              #Change the network you would like to use in the settings.json:
-                              #main network = "main"
-                              #ropsten network = "ropsten"
-                              #rinkeby network = "rinkeby"
-                              #kovan network = "kovan"
-
-                              network = Meteor.settings.public.metamask.network
-                              if netId is '1' && network is 'main'
-                                checkAccountBalance!
-                              else
-                                if netId is '3' && network is 'ropsten'
-                                  checkAccountBalance!
-                                else
-                                  if netId is '4' && network is 'rinkeby'
-                                    checkAccountBalance!
-                                  else
-                                    if netId is '42' && network is 'kovan'
-                                      checkAccountBalance!
-                                    else
-                                      swal {
-                                        title: 'Wrong network'
-                                        text: 'You are connected to the wrong network. Please switch to ' + network + ' network to make loans.'
-                                        icon: 'info'
-                                      }
-                              return )
-
     script = document.createElement 'script'
     script.setAttribute 'type', 'text/javascript'
     script.setAttribute 'src', 'https://sidecar.gitter.im/dist/sidecar.v1.js'
@@ -170,13 +149,7 @@ Template.layout.rendered=->
         activationElement: false
     }
 
-go-cycle=(iterator, eld)~> 
-    unless web3?
-        if iterator < 50
-            Meteor.setTimeout (-> iterator +=1; console.log(\web3-loading:,iterator);  go-cycle!), 20
-                
-        else no_metamask!
-    else 
-        state.set \defaultAccount web3?eth?defaultAccount
-        console.log \done
-        eld
+
+
+
+

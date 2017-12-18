@@ -2,9 +2,9 @@
 	# if !address?length || address?length < 30 => address = big-zero
 	web3?eth.contract(config.LR-ABI).at(address)[method](...args)
 	
-@ledger = call:(method)~>(...args)~> web3?eth.contract(config.LEDGER-ABI).at(config.ETH_MAIN_ADDRESS)[method](...args)
+@ledger = call:(method)~>(...args)~> web3?eth.contract(config.LEDGER-ABI).at(state.get(\ETH_MAIN_ADDRESS))[method](...args)
 
-@ticker = call:(method)~>(...args)~> web3?eth.contract(config.TICKER-ABI).at(config.ETH_TICKER_ADDRESS)[method](...args)
+@ticker = call:(method)~>(...args)~> web3?eth.contract(config.TICKER-ABI).at(state.get(\ETH_TICKER_ADDRESS))[method](...args)
 @init   = (obj)~> (method)~> obj[method] = obj[\call](method)
 
 map init(ledger), ["mainAddress", "registrarAddress", "repTokenAddress", "getLr", "getLrFunded", "ethTickerAddress", "newLrAndSetData", "ensRegistryAddress", "unlockRepTokens", "totalLrCount", "lockRepTokens", "addRepTokens", "newLr", "getLrCount", "whereToSendFee", "borrowerFeeAmount", "getLrFundedCount", "getRepTokenAddress", "approveRepTokens", "burnRepTokens", "getFeeSum"]
