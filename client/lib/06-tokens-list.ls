@@ -39,7 +39,7 @@
 	
 	* decimals:18 id:\CFI  address:\0x12fef5e57bf45873cd9b62e9dbd7bfb99e32d73e name:'Cofound.it (CFI)' link:'https://cofound.it/' description:'Cofound.it is a platform that connects you to teams that have trained to become serious blockchain businesses' 
 	* decimals:6  id:\TRST address:\0xcb94be6f13a1182e4a4b6140cb7bf2025d28e41b name:'Trustcoin - WeTrust' link:'https://www.wetrust.io/' description:'A platform for Trusted Lending Circles, powered by people and blockchain' 
-	* decimals:18 id:\firstblood address:\0xaf30d2a7e90d7dc361c8c4585e9bb7d2f6f15bc7 name:'FirstBlood' link:'https://firstblood.io/' description:'FirstBlood.io (“FirstBlood”) is a decentralized Esports gaming platform that is powered by the blockchain' 
+	* decimals:18 id:\1ST  address:\0xaf30d2a7e90d7dc361c8c4585e9bb7d2f6f15bc7 name:'FirstBlood' link:'https://firstblood.io/' description:'FirstBlood.io (“FirstBlood”) is a decentralized Esports gaming platform that is powered by the blockchain' 
 	* decimals:6  id:\TAAS address:\0xe7775a6e9bcf904eb39da2b68c5efb4f9360e08c name:'Taas Fund' link:'https://taas.fund/' description:'TaaS is a tokenized closed-end fund designed to reduce the risks and technical barriers of investing in the blockchain space.' 
 	* decimals:18 id:\DNT  address:\0x0abdace70d3790235af448c88547603b945604ea name:'district0x' link:'https://district0x.io/' description:'A network of decentralized markets and communities. Create, operate, and govern. Powered by Ethereum, Aragon, and IPFS.' 
 	
