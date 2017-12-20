@@ -117,6 +117,7 @@ checkAccountBalance = ->
 Template.layout.rendered=->
     #Notify if MetaMask is not installed
     if !web3? =>
+                   Router.go \/no_metamask
                    link = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'
                    swal {
                      title: 'Metamask is not installed'
