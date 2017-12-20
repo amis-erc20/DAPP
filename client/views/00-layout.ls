@@ -24,9 +24,9 @@ template \layout ->
 #       CHECK FOR WEB3 do
             div class:'main-shell', 
             if !web3? 
-              SI @lookupTemplate \no_metamask
-        
-            else 
+              SI @lookupTemplate \noMetamask
+
+            else
               if state.get \ETH_MAIN_ADDRESS
                 if state.get(\ETH_MAIN_ADDRESS) == \err
                   SI @lookupTemplate \wrong_network
@@ -42,7 +42,7 @@ template \layout ->
             p class:\footer-inscription, "EthLend ©2017"
 
 
-Template.layout.events do 
+Template.layout.events do
     'click .nav-link-wrapper':->
         $(\.selected).remove-class(\selected)
         $(event.target).add-class(\selected)
@@ -61,7 +61,7 @@ Template.layout.rendered=->
       i.'GoogleAnalyticsObject' = r
       i[r] = i[r] || ->
         (i[r].q = i[r].q || []).push arguments
-        return 
+        return
       i[r].l = 1 * new Date
       a = s.createElement o
       m = (s.getElementsByTagName o).0
@@ -125,6 +125,51 @@ Template.layout.created=->
 
 Template.layout.rendered=->
     #Notify if MetaMask is not installed
+    if !web3? =>
+        Router.go \/noMetamask
+        link = void
+
+        script = void
+
+        if typeof web3 is 'undefined' or web3 is null
+          link = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'
+          swal {
+            title: 'Metamask is not installed'
+            text: 'This site requires Metamask to use it\'s full functionality. Download the plugin for Google Chrome.'
+            icon: 'warning'
+            showCancelButton: true
+            close: false
+            buttons: [{
+              cancel: 'Continue without it'
+              download: 'Get it here'
+            }]
+            dangerMode: true
+          }, (download) ->
+            window.location.href = link if download
+            return
+
+        if web3 and web3.eth
+          web3.version.getNetwork ((err, netId) ->
+            network = void
+            network = Meteor.settings.'public'.metamask.network
+            if netId is '1' && network is 'main'
+              checkAccountBalance!
+            else
+              if netId is '3' && network is 'ropsten'
+                checkAccountBalance!
+              else
+                if netId is '4' && network is 'rinkeby'
+                  checkAccountBalance!
+                else
+                  if netId is '42' && network is 'kovan'
+                    checkAccountBalance!
+                  else
+                    swal {
+                      title: 'Wrong network'
+                      text: 'You are connected to the wrong network. Please switch to ' + network + ' network to make loans.'
+                      icon: 'info'
+                    }
+            return )
     script = document.createElement 'script'
     script.setAttribute 'type', 'text/javascript'
     script.setAttribute 'src', 'https://sidecar.gitter.im/dist/sidecar.v1.js'
@@ -135,8 +180,3 @@ Template.layout.rendered=->
         room: 'ethlend/lobby',
         activationElement: false
     }
-
-
-
-
-
