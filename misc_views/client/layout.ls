@@ -85,7 +85,6 @@ Template.layout.rendered=->
     state.set \info-class     if (state.get(\addr-last)==\info)             => \selected else ''
     state.set \new-loan-class if (state.get(\addr-last)==\new-loan-request) => \selected else ''
 
-
 checkAccountBalance = ->
   web3.eth.getAccounts ((err, accounts) ->
     if err isnt null
