@@ -127,49 +127,6 @@ Template.layout.rendered=->
     #Notify if MetaMask is not installed
     if !web3? =>
         Router.go \/noMetamask
-        link = void
-
-        script = void
-
-        if typeof web3 is 'undefined' or web3 is null
-          link = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'
-          swal {
-            title: 'Metamask is not installed'
-            text: 'This site requires Metamask to use it\'s full functionality. Download the plugin for Google Chrome.'
-            icon: 'warning'
-            showCancelButton: true
-            close: false
-            buttons: [{
-              cancel: 'Continue without it'
-              download: 'Get it here'
-            }]
-            dangerMode: true
-          }, (download) ->
-            window.location.href = link if download
-            return
-
-        if web3 and web3.eth
-          web3.version.getNetwork ((err, netId) ->
-            network = void
-            network = Meteor.settings.'public'.metamask.network
-            if netId is '1' && network is 'main'
-              checkAccountBalance!
-            else
-              if netId is '3' && network is 'ropsten'
-                checkAccountBalance!
-              else
-                if netId is '4' && network is 'rinkeby'
-                  checkAccountBalance!
-                else
-                  if netId is '42' && network is 'kovan'
-                    checkAccountBalance!
-                  else
-                    swal {
-                      title: 'Wrong network'
-                      text: 'You are connected to the wrong network. Please switch to ' + network + ' network to make loans.'
-                      icon: 'info'
-                    }
-            return )
     script = document.createElement 'script'
     script.setAttribute 'type', 'text/javascript'
     script.setAttribute 'src', 'https://sidecar.gitter.im/dist/sidecar.v1.js'
