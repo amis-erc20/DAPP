@@ -59,6 +59,9 @@
 	* decimals:0  id:\BCAP address:\0xff3519eeeea3e76f1f699ccce5e23ee0bdda41ac name:'Bcap - Blockchain Capital' link:'http://blockchain.capital/' description:'Blockchain Capital is a pioneer and the premier venture capital firm investing in Blockchain enabled technology	' 
 	* decimals:18 id:\PLU  address:\0xD8912C10681D8B21Fd3742244f44658dBA12264E name:'Pluton - Plutus.it' link:'https://plutus.it/' description:'With Plutus Tap & Pay, you can pay at any NFC-enabled merchant' 
 	* decimals:0  id:\VSL address:\0x5c543e7AE0A1104f78406C340E9C64FD9fCE5170 name:'vSlice'  link:'http://www.vslice.io/' description:'An Ethereum Gaming Platform Token' 
+	* decimals:18  id:\REQ address:\0x8f8221afbb33998d8584a2b05749ba73c37a938a name:'Request Network'  link:'https://request.network/#/' description:'A decentralized network for payment requests' 
+	* decimals:18  id:\VERI address:\0x8f3470A7388c05eE4e7AF3d01D8C722b0FF52374 name:'Veritaseum'  link:'http://veritas.veritaseum.com/' description:'Veritaseum enables software-driven P2P capital markets without brokerages, banks or traditional exchanges.' 
+	* decimals:8  id:\SALT address:\0x4156D3342D5c385a87D264F90653733592000581 name:'SALT'  link:'https://www.saltlending.com/' description:'Hold your assets, get your cash.' 
 
 @smart-contract-converter=-> 
 	for item in tokens-list!
