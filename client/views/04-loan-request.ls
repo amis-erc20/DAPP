@@ -115,7 +115,7 @@ text-and-button=-> div class:\text-aligned,
             if ((state.get(\lr)?installments_count) - (state.get(\lr)?installments_paid) <= 1)
                 "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } in order to get #{ensQ(\tokens \domain 'the loan')} back"
             else
-                "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } ETH in order to repay the instalment. When all instalments are paid, the tokens are sent back to the borrower’s address."
+                "Borrower should now return #{ needed-sum-bor! } #{if state.get(\lr)?currency~=0 => \Eth else \Usd } ETH in order to repay the installment. When all installments are paid, the tokens are sent back to the borrower’s address."
 
         button class:'card-button bgc-primary loan-button return-tokens' disabled:true, 'Pay an installment'
     if state.get(\lr-State)==4 && state.get(\IamLender) => D \text-s,
